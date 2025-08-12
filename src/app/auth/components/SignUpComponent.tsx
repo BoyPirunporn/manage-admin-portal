@@ -1,15 +1,14 @@
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Form } from '@/components/ui/form';
+import { FormInputField } from '@/components/ui/form-input';
 import { cn } from '@/lib/utils';
-import React from 'react';
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { zodResolver } from "@hookform/resolvers/zod";
-import { FormInputField } from '@/components/ui/form-input';
 import SocialComponent from './SocialComponent';
 const signUpSchema = z.object({
-    name: z.string().min(0).max(50),
+    firstName: z.string().min(0).max(50),
+    lastName: z.string().min(0).max(50),
     email: z.string().min(1).max(50),
     password: z.string().min(1).max(50)
 });
@@ -26,7 +25,8 @@ const SignUpComponent = ({
     const form = useForm<SignUp>({
         resolver: zodResolver(signUpSchema),
         defaultValues: {
-            name: "",
+            firstName: "",
+            lastName: "",
             email: "",
             password: ""
         }
@@ -40,7 +40,8 @@ const SignUpComponent = ({
                 <form className="form-container">
                     <h1 className="text-xl font-bold">Create Account</h1>
                     <div className='flex flex-col gap-3 w-full'>
-                         <FormInputField control={form.control} name={"name"} label={'Name'}/>
+                         <FormInputField control={form.control} name={"firstName"} label={'First Name'}/>
+                         <FormInputField control={form.control} name={"lastName"} label={'Last Name'}/>
                          <FormInputField control={form.control} name={"email"} label={'Email'}/>
                          <FormInputField control={form.control} type='password' name={"password"} label={'Password'}/>
                         <SocialComponent/>

@@ -1,17 +1,19 @@
 'use client';
  
+import { logger } from '@/lib/utils';
+import { AxiosError } from 'axios';
 import { useEffect } from 'react';
  
 export default function GlobalError({
   error,
   reset,
 }: {
-  error: Error & { digest?: string };
+  error: any & { digest?: string };
   reset: () => void;
 }) {
   useEffect(() => {
-    // Optionally log the error to an error reporting service
-    console.error(error);
+    
+    logger.error(error);
   }, [error]);
  
   return (

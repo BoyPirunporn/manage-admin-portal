@@ -1,27 +1,17 @@
-import { logger } from "@/lib/utils";
-import { DataTablesOutput, MenuModel } from "@/model";
+import { MenuModel, ResponseApiWithPayload } from "@/model";
 import { NextRequest, NextResponse } from "next/server";
-import { apiRequest } from "../_utils/api-request";
+import { handleDataTableRequest } from "../_utils/handle-datatable-request";
+import { apiRequest, responseError } from "../_utils/api-request";
 
-export const POST = async (req: NextRequest) => {
-    const body = await req.json();
+export const POST = async (req: NextRequest) => handleDataTableRequest<MenuModel[]>(req,"/api/v1/menu/datatable");
+export const GET = async (req:NextRequest) => {
     try {
-        const response: DataTablesOutput<MenuModel[]> = await apiRequest({
-            url: "/api/v1/menu/datatable",
-            method: "POST",
-            data: body,
-            headers: {
-                "Content-Type": "application/json"
-            }
+        const response = await apiRequest<ResponseApiWithPayload<MenuModel[]>>({
+            url:"/api/v1/menu",
+            method:"GET"
         });
-        // แปลง Spring Boot DataTablesOutput เป็น format ที่ frontend ใช้
-        return NextResponse.json(response);
-    } catch (error) {
-        logger.debug({ error });
-        return NextResponse.json({
-            error: (error as Error).message
-        }, {
-            status: 500
-        });
+        return NextResponse.json(response.payload);
+    }catch(error){
+        return responseError(error)
     }
-};
+}

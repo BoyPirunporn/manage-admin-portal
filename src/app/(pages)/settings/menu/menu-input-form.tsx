@@ -23,8 +23,7 @@ const baseMenuSchema: z.ZodType<MenuModel> = z.lazy(() =>
             .union([
                 z.literal(null),
                 z.enum(Object.keys(Icons) as [keyof typeof Icons])
-            ])
-            .optional(),
+            ]),
         visible: z.preprocess(
             val => {
                 return String(val) === "true";
@@ -88,7 +87,13 @@ const MenuInputForm = ({
 
     const handleSubmit = async (menu: BaseMenuSchema) => {
         try {
-            await created(menu);
+            await fetch("http://localhost:3000" + "/api/menu/created", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(menu)
+            });
             toast.info("Menu has been created.");
         } catch (error) {
             logger.debug(error);
@@ -104,7 +109,6 @@ const MenuInputForm = ({
         .filter((icon) => icon.toLowerCase().includes(searchQuery.toLowerCase()))
         .slice(0, 50)
         .map((icon) => ({ label: icon, value: icon }));
-
     logger.debug(form.formState.errors);
     return (
         <Form {...form}>

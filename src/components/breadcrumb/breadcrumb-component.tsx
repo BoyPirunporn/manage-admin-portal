@@ -8,7 +8,7 @@ import {
     BreadcrumbSeparator
 } from '@/components/ui/breadcrumb';
 import { MenuModel } from '@/model';
-import { useSession } from 'next-auth/react';
+import { useStoreMenu } from '@/stores/store-menu';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useMemo } from 'react';
@@ -18,8 +18,7 @@ export function findBreadcrumb(
 ): { title: string; url: string; }[] {
     const path: { title: string; url: string; }[] = [];
     const dfs = (nodes: MenuModel[]): boolean => {
-        for (const node of nodes) {
-            // match current node
+        nodes && nodes.forEach(node => {
             if (node.url && pathname === node.url) {
                 path.unshift({ title: node.title, url: node.url });
                 return true;
@@ -33,7 +32,7 @@ export function findBreadcrumb(
                     return true;
                 }
             }
-        }
+        })
 
         return false;
     };
@@ -42,10 +41,9 @@ export function findBreadcrumb(
     return path;
 }
 export const BreadcrumbComponent = () => {
-    const { data: session } = useSession();
-    const menus = session?.menus ?? [];
+    const { menus } = useStoreMenu();
     const pathname = usePathname();
-    const crumbs = useMemo(() => findBreadcrumb(pathname, menus), [pathname,menus]);
+    const crumbs =findBreadcrumb(pathname, menus!);
 
     if (crumbs.length === 0) return null;
     return (

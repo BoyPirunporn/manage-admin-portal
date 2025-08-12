@@ -15,17 +15,18 @@ import {
     SidebarRail,
     useSidebar
 } from '@/components/ui/sidebar';
+import { useActivityLog } from '@/hooks/use-activity-log';
 import { EachElement } from '@/lib/utils';
 import { MenuModel } from '@/model';
+import { useStoreMenu } from '@/stores/store-menu';
 import { Avatar } from '@radix-ui/react-avatar';
 import { ChevronRight } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 import { Skeleton } from '../ui/skeleton';
 import { NavUser } from './nav-user';
-import { useActivityLog } from '@/hooks/use-activity-log';
+import { useSession } from 'next-auth/react';
 
 
 const buildMenu = (menus: MenuModel[], pathname: string, closeSideBar: () => void) => {
@@ -69,21 +70,39 @@ const buildMenu = (menus: MenuModel[], pathname: string, closeSideBar: () => voi
     });
 };
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    const { data: session, status } = useSession();
+    const { status } = useSession();
+    console.log(status)
     const pathname = usePathname(); // ✅ ปลอดภัย เรียก hook ด้านบนสุด
-    const menus = session?.menus ?? [];
     const { isMobile, setOpenMobile } = useSidebar();
+    const { menus, setMenus } = useStoreMenu();
+    React.useEffect(() => {
+        if (status === "authenticated" && !menus) {
+            // fetch once
+            (async () => {
+                try {
+                    const r = await fetch("http://localhost:3000/api/menu");
+                    if (!r.ok) throw new Error("Failed to load menu");
+                    const json = await r.json();
+                    console.log({ json });
+                    setMenus(json); // store
+                } catch (e) {
+                    console.error(e);
+                }
+            })();
+        }
+    }, [status,menus, setMenus]);
+
     return (
         <Sidebar {...props}>
             <SidebarHeader className='px-5'>
                 <Avatar className="h-8 w-8 rounded-lg ">
-                    <AvatarImage src={"session?.user?.image!"} alt={"logo"} />
+                    <AvatarImage src={"https://github.com/shadcn.png"} alt={"logo"} />
                     <AvatarFallback className="rounded-lg">Logo</AvatarFallback>
                 </Avatar>
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
-                    {status === "loading" ? (
+                    {!menus ? (
                         <SidebarGroupContent className='flex flex-col gap-3'>
                             <EachElement
                                 of={Array.from(Array(10).keys())}
@@ -100,10 +119,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         </SidebarGroupContent>
                     ) : (
                         <SidebarGroupContent className='gap-2 flex flex-col'>
-                            {
-                                buildMenu(menus, pathname, () => {
-                                    if (isMobile) setOpenMobile(false);
-                                })
+                            {buildMenu(menus, pathname, () => {
+                                if (isMobile) setOpenMobile(false);
+                            })
                             }
                         </SidebarGroupContent>
                     )}

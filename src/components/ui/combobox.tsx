@@ -36,7 +36,7 @@ export function ComboBoxIcon(
         inputValue
     }: ComboBoxProps) {
     const [open, setOpen] = useState(false);
-
+    
     const selectedLabel = options.find((o) => o.value === value)?.label;
 
     
@@ -58,6 +58,7 @@ export function ComboBoxIcon(
                 <CommandList className="max-h-60 overflow-auto">
                     <CommandEmpty>No results found</CommandEmpty>
                     {options.map((option) => {
+                        console.log({option})
                         return (
                             <CommandItem
                                 key={option.value}
@@ -68,7 +69,7 @@ export function ComboBoxIcon(
                                 }}
                             >
                                 <CheckIcon className={`mr-2 h-4 w-4 ${value === option.value ? "opacity-100" : "opacity-0"}`} />
-                                <RenderIcon name={option.value as IconName} />
+                                <RenderIcon name={option.value.substring(0,1).toUpperCase() + option.value.substring(1) as IconName} />
                                 {option.label}
                             </CommandItem>
                         );

@@ -1,29 +1,32 @@
 'use client';
+import { logger } from '@/lib/utils';
+import { CustomColumnDef, DataTablesOutput } from '@/model';
 import useStoreModal from '@/stores/store-model';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { getCoreRowModel, RowData, useReactTable } from '@tanstack/react-table';
+import axios from 'axios';
 import { useState } from 'react';
 import DataTable, { PageSize } from './data-table';
-import { DataTablesOutput } from '@/model';
-import { logger } from '@/lib/utils';
+import { report } from '@/app/api/_utils/api-request';
 
-interface GlobalDataTableProps<T> {
-    columns: ColumnDef<T, any>[];
+interface SearchCriteria {
+column: string;
+        value: string;
+        searchable: boolean;
+        orderable: boolean;
+        regex?: boolean;
+}
+export interface GlobalDataTableProps<T extends RowData> {
+    columns: CustomColumnDef<T>[];
     apiUrl: string;
     queryKey?: string;
     initialPageSize?: PageSize;
-    searchCriteria?: {
-        column:string;
-        value:string;
-        searchable:boolean;
-        orderable:boolean;
-        regex?:boolean;
-    }[];
-    orders?:string[]
+    searchCriteria?: SearchCriteria[];
+    orders?: string[];
 }
 
 
-function GlobalDataTable<T>({
+function GlobalDataTable<T extends RowData>({
     columns,
     apiUrl,
     queryKey = 'datatable',
@@ -57,19 +60,20 @@ function GlobalDataTable<T>({
                     },
                 })), // optional
             };
-            logger.debug(payload)
+            logger.debug(payload);
             try {
-                const res = await fetch(`http://localhost:3000/${apiUrl}`, {
+                const res = await axios<DataTablesOutput<T>>(`http://localhost:3000/${apiUrl}`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload),
+                    data: payload,
                 });
-                if (!res.ok) throw new Error("Failed to fetch");
-                return res.json() as Promise<DataTablesOutput<T>>;
+                return res.data as DataTablesOutput<T>;
             } catch (error) {
+                // logger.debug({error})
+                console.log("ERROR -> ", error);
                 storeModal.openModal({
                     title: "Error",
-                    content: (error as Error).message
+                    content: report(error)
                 });
                 return null as unknown as DataTablesOutput<T>;
             }
@@ -91,9 +95,10 @@ function GlobalDataTable<T>({
             table={table}
             isLoading={isLoading}
             pageIndex={pageIndex}
+            setPageIndex={setPageIndex}
             pageCount={table.getPageCount() ?? 0}
-            handleNextPage={() => setPageIndex((p) => p + 1)}
-            handlePreviousPage={() => setPageIndex((p) => Math.max(0, p - 1))}
+            // handleNextPage={() => setPageIndex((p) => p + 1)}
+            // handlePreviousPage={() => setPageIndex((p) => Math.max(0, p - 1))}
             pageSize={pageSize}
             setPageSize={(size) => {
                 setPageSize(size);

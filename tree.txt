@@ -1,0 +1,156 @@
+src
+├── app
+│   ├── (pages)
+│   │   ├── (dashboard)
+│   │   │   └── page.tsx
+│   │   ├── _protect-route
+│   │   │   └── protect-route.tsx
+│   │   ├── activity-logs
+│   │   │   └── page.tsx
+│   │   ├── layout.tsx
+│   │   └── settings
+│   │       ├── change-password
+│   │       │   └── page.tsx
+│   │       ├── member
+│   │       │   ├── [id]
+│   │       │   │   ├── action.ts
+│   │       │   │   ├── components
+│   │       │   │   │   └── form-member-input.tsx
+│   │       │   │   └── page.tsx
+│   │       │   ├── action
+│   │       │   │   └── member-action.ts
+│   │       │   ├── client
+│   │       │   │   └── member-client.tsx
+│   │       │   ├── columnDef
+│   │       │   │   └── member-column.tsx
+│   │       │   └── page.tsx
+│   │       ├── menu
+│   │       │   ├── action.ts
+│   │       │   ├── column-def.tsx
+│   │       │   ├── menu-input-form.tsx
+│   │       │   └── page.tsx
+│   │       ├── profile
+│   │       │   ├── components
+│   │       │   │   ├── notification
+│   │       │   │   │   └── notification-preferences.tsx
+│   │       │   │   ├── profile-connect.tsx
+│   │       │   │   ├── profile-detail.tsx
+│   │       │   │   └── security
+│   │       │   │       ├── activate-session.tsx
+│   │       │   │       └── security-setting.tsx
+│   │       │   └── page.tsx
+│   │       └── role-and-permission
+│   │           ├── page.tsx
+│   │           ├── role-and-permission-form.tsx
+│   │           └── role-column-def.tsx
+│   ├── api
+│   │   ├── _utils
+│   │   │   ├── api-request.ts
+│   │   │   └── handle-datatable-request.ts
+│   │   ├── activity-log
+│   │   │   ├── datatable
+│   │   │   │   └── route.ts
+│   │   │   └── route.ts
+│   │   ├── auth
+│   │   │   └── [...nextauth]
+│   │   │       └── route.ts
+│   │   ├── member
+│   │   │   └── route.ts
+│   │   ├── menu
+│   │   │   ├── created
+│   │   │   │   └── route.ts
+│   │   │   ├── find-by-title
+│   │   │   │   └── route.ts
+│   │   │   └── route.ts
+│   │   └── role-and-permission
+│   │       ├── datatable
+│   │       │   └── route.ts
+│   │       ├── get-permission
+│   │       │   └── route.ts
+│   │       └── get-role
+│   │           └── route.ts
+│   ├── auth
+│   │   ├── components
+│   │   │   ├── SignInComponent.tsx
+│   │   │   ├── SignUpComponent.tsx
+│   │   │   ├── SocialComponent.tsx
+│   │   │   ├── ToggleComponent.tsx
+│   │   │   └── ToggleMobileComponent.tsx
+│   │   └── page.tsx
+│   ├── favicon.ico
+│   ├── global-error.tsx
+│   ├── globals.css
+│   └── layout.tsx
+├── components
+│   ├── autocomplete
+│   │   └── form-input-autocomplete.tsx
+│   ├── breadcrumb
+│   │   └── breadcrumb-component.tsx
+│   ├── column-action.tsx
+│   ├── datatable
+│   │   ├── data-table.tsx
+│   │   ├── global-datatable.tsx
+│   │   ├── pagination-table.tsx
+│   │   └── server-action.ts
+│   ├── dialog
+│   │   ├── dialog-component.tsx
+│   │   └── modal.tsx
+│   ├── drawer
+│   │   ├── drawer-component.tsx
+│   │   └── drawer-demo.tsx
+│   ├── sidebar
+│   │   ├── app-sidebar.tsx
+│   │   └── nav-user.tsx
+│   └── ui
+│       ├── accordion.tsx
+│       ├── avatar.tsx
+│       ├── breadcrumb.tsx
+│       ├── button.tsx
+│       ├── card.tsx
+│       ├── checkbox.tsx
+│       ├── collapsible.tsx
+│       ├── combobox.tsx
+│       ├── command.tsx
+│       ├── dialog.tsx
+│       ├── drawer.tsx
+│       ├── dropdown-menu.tsx
+│       ├── form-input.tsx
+│       ├── form.tsx
+│       ├── input.tsx
+│       ├── label.tsx
+│       ├── pagination.tsx
+│       ├── popover.tsx
+│       ├── render-icon.tsx
+│       ├── select.tsx
+│       ├── separator.tsx
+│       ├── sheet.tsx
+│       ├── sidebar.tsx
+│       ├── skeleton.tsx
+│       ├── sonner.tsx
+│       ├── table.tsx
+│       ├── tabs.tsx
+│       ├── theme-mode.tsx
+│       └── tooltip.tsx
+├── config.route.ts
+├── hooks
+│   ├── use-activity-log.ts
+│   ├── use-debounce.ts
+│   └── use-mobile.ts
+├── lib
+│   ├── auth.ts
+│   └── utils.ts
+├── middleware.ts
+├── model.d.ts
+├── providers
+│   ├── AuthProvider.tsx
+│   ├── DialogProvider.tsx
+│   ├── DrawerProvider.tsx
+│   ├── ImageProvider.tsx
+│   ├── QueryProvider.tsx
+│   └── ThemeProvider.tsx
+└── stores
+    ├── store-drawer.ts
+    ├── store-menu.ts
+    └── store-model.ts
+
+48 directories, 106 files

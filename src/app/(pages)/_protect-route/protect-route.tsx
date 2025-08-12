@@ -1,8 +1,9 @@
 "use client";
 import { Button } from '@/components/ui/button';
+import { useActivityLog } from '@/hooks/use-activity-log';
+import { useStoreMenu } from '@/stores/store-menu';
 import useStoreModal from '@/stores/store-model';
 import { signOut, useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
 import React from 'react';
 
 const ProtectRoute = ({
@@ -13,8 +14,11 @@ const ProtectRoute = ({
     const { data: session } = useSession();
 
     React.useEffect(() => {
-        if (session?.error === "RefreshAccessTokenError") {
+
+        if (session?.error || session?.error === "RefreshAccessTokenError") {
             signOut({ redirect:false});
+            useStoreMenu.getState().clear()
+            useActivityLog().log("SIGNOUT", "TOKEN:EXPIRED")
             useStoreModal.getState().openModal({
                 title: "UnAuthorization",
                 showCloseButton: false,

@@ -2,18 +2,24 @@ import { NextAuthOptions, Session, User } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { logger } from "./utils";
+import { MenuModel, ResponseApiWithPayload } from "@/model";
+import { apiRequest, report } from "@/app/api/_utils/api-request";
 
 export async function refreshAccessToken(token: JWT) {
   try {
-    const res = await fetch(process.env.API_SERVICE + "/api/v1/auth/refresh-token", {
+    const refreshed = await apiRequest<ResponseApiWithPayload<{
+            token: string;
+            refreshToken: string;
+            roles: string[];
+            firstName: string;
+            lastName: string;
+            image: string;
+          }>>( {
+      url:"/api/v1/auth/refresh-token",
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refreshToken: token.refreshToken }),
+      data: {refreshToken: token.refreshToken},
     });
-
-    const refreshed = await res.json();
-
-    if (!res.ok) throw new Error("Failed to refresh");
 
     return {
       ...token,
@@ -22,6 +28,7 @@ export async function refreshAccessToken(token: JWT) {
       refreshToken: refreshed.payload.refreshToken,
     };
   } catch (error) {
+    console.log(error)
     console.error("Refresh error:", error);
     return { ...token, error: "RefreshAccessTokenError" };
   }
@@ -38,48 +45,69 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         logger.debug({ credentials });
-        const res = await fetch(process.env.API_SERVICE + "/api/v1/auth/sign-in", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(credentials),
-        });
-        if (res.status === 400) {
-          throw new Error(JSON.stringify(await res.json()));
+        try {
+          const res = await apiRequest({
+            url: "/api/v1/auth/sign-in",
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            data: credentials,
+          });
+         
+          const user = res as ResponseApiWithPayload<{
+            token: string;
+            refreshToken: string;
+            roles: string[];
+            firstName: string;
+            lastName: string;
+            image: string;
+            menus: MenuModel[];
+          }>;
+          logger.debug({ menu: user.payload.menus });
+
+          const authentication = {
+            email: credentials?.email,
+            accessToken: user.payload.token,
+            refreshToken: user.payload.refreshToken,
+            firstName: user.payload.firstName,
+            lastName: user.payload.lastName,
+            image: user.payload.image,
+            roles: user.payload.roles,
+            accessTokenExpires: JSON.parse(atob(user.payload.token.split(".").at(1)!)).exp * 1000, //ที่ *1000 เพราะ ได้ค่าเป็น second เลยต่อง * 1000
+            // menus: user.payload.menus.map(menu => {
+            //   const mapMenu = (m: MenuModel): MenuModel => {
+            //     return {
+            //       ...m,
+            //       items: m.items?.map((child) => mapMenu(child)) || []
+            //     };
+            //   };
+            //   return mapMenu(menu);
+            // }) //TODO:: ดึงจาก api 
+          } as User;
+
+          logger.debug({ authentication });
+          return authentication;
+        } catch (error) {
+          throw new Error(report(error));
         }
-        const user = await res.json();
-
-        if (!res.ok || !user.payload.token) throw new Error("Login failed");
-
-        const menuRequest = await fetch(process.env.API_SERVICE + "/api/v1/menu", {
-          headers: {
-            "Content-Type": "application/json"
-          }
-        });
-
-        const responseMenu = await menuRequest.json();
-
-        const authentication = {
-          id: "1",
-          email: credentials?.email,
-          accessToken: user.payload.token,
-          refreshToken: user.payload.refreshToken,
-          firstName: "John",
-          lastName: "Biden",
-          image: "",
-          roles: ["SuperAdmin"],
-          accessTokenExpires: JSON.parse(atob(user.payload.token.split(".").at(1)!)).exp * 1000, //ที่ *1000 เพราะ ได้ค่าเป็น second เลยต่อง * 1000
-          menus: responseMenu.payload //TODO:: ดึงจาก api 
-        };
-
-        logger.debug({ authentication });
-        return authentication;
       },
     }),
   ],
   pages: {
-    signIn: "/auth",
+    signIn: "/",
   },
   session: { strategy: "jwt" },
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production", // เปลี่ยนบรรทัดนี้
+      },
+    },
+  },
+
   callbacks: {
     async jwt({ token, user }: { token: JWT; user: User | undefined; }) {
       // กรณีมี user ใหม่ (ตอน login หรือ session ใหม่)
@@ -87,7 +115,7 @@ export const authOptions: NextAuthOptions = {
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
         token.accessTokenExpires = user.accessTokenExpires; // สมมติเป็น ms
-        token.menus = user.menus;
+        // token.menus = user.menus;
         token.firstName = user.firstName;
         token.lastName = user.lastName;
         token.image = user.image;
@@ -125,7 +153,8 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }: { session: Session, token: JWT; }) {
       session.accessToken = token.accessToken;
-      session.menus = token.menus;
+      // session.menus = token.menus;
+      session.roles = token.roles;
       session = {
         ...session,
         user: { ...session.user!, firstName: token.firstName, lastName: token.lastName, image: token.image, roles: token.roles }

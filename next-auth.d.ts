@@ -2,6 +2,7 @@ import { Menu } from "@/model";
 import "next-auth";
 
 declare module 'next-auth' {
+    interface DefaultUser {}
     interface User {
         accessToken?: string;
         refreshToken?: string;
@@ -18,13 +19,14 @@ declare module 'next-auth' {
         accessToken?: string;
         refreshToken?: string;
         menus: Menu[];
+        roles: string[]
         error?: string;
     }
 }
 
 declare module "next-auth/jwt" {
     interface JWT {
-        id?: string;
+        // id?: string;
         exp?: number;
         lat?: number;
         accessToken?: string;

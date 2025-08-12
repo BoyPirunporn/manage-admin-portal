@@ -32,6 +32,7 @@ import {
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useActivityLog } from "@/hooks/use-activity-log";
+import { useStoreMenu } from "@/stores/store-menu";
 
 export function NavUser() {
     const { isMobile } = useSidebar();
@@ -46,7 +47,7 @@ export function NavUser() {
                             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                         >
                             <Avatar className="h-8 w-8 rounded-lg">
-                                <AvatarImage src={session?.user?.image!} alt={session?.user?.name!} />
+                                <AvatarImage src={"https://github.com/shadcn.png"} alt={session?.user?.name!} />
                                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">
@@ -65,7 +66,7 @@ export function NavUser() {
                         <DropdownMenuLabel className="p-0 font-normal">
                             <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                                 <Avatar className="h-8 w-8 rounded-lg">
-                                    <AvatarImage src={session?.user?.image!} alt={session?.user?.name!} />
+                                    <AvatarImage src={"https://github.com/shadcn.png"} alt={session?.user?.name!} />
                                     <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                                 </Avatar>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -91,10 +92,11 @@ export function NavUser() {
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={async () => {
                             await useActivityLog().log("SIGNOUT", "USER:SIGNOUT", { form: "menu-user" });
-                            signOut({
+                            await signOut({
                                 redirect: true,
                                 callbackUrl: "/auth"
                             });
+                             useStoreMenu.getState().clear();
                         }}>
                             <LogOut />
                             Log out

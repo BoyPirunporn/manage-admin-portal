@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { logger } from "@/lib/utils";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
 
 const apiBaseUrl = process.env.API_SERVICE!;
 
@@ -24,7 +25,7 @@ export async function apiRequest<T = unknown>(
   const controller = new AbortController();
   const session = await getServerSession(authOptions);
   const token = session?.accessToken;
-
+  console.log({ session });
   if (config.signal) {
     // ถ้า config.signal ถูก abort ให้ cancel axios ด้วย
     config.signal.addEventListener?.("abort", () => {
@@ -42,7 +43,30 @@ export async function apiRequest<T = unknown>(
 
     return response.data;
   } catch (error) {
-    logger.error({error})
-    return Promise.reject(error)
+    logger.error({ error });
+    return Promise.reject(error);
   }
 }
+
+
+export const report = (error: unknown) => {
+  logger.debug(error);
+  return axios.isAxiosError(error) ? (error.response?.data.message ?? error.message) : (error as Error).message;
+};
+
+export const responseError = (error: unknown) => {
+  if (axios.isAxiosError(error)) {
+    return NextResponse.json({
+      message: (error.response?.data.message ?? error.message),
+      status: error.response?.status ?? error.status
+    }, {
+      status: error.response?.status ?? error.status
+    });
+  }
+  return NextResponse.json({
+    message: (error as Error).message,
+    status: 500
+  }, {
+    status: 500,
+  });
+};

@@ -7,13 +7,14 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { cn, EachElement } from '@/lib/utils';
+import { CustomColumnDef } from '@/model';
 import {
     flexRender,
     RowData,
     Table as TableType
 } from '@tanstack/react-table';
-import React from 'react';
-import { EachElement } from '@/lib/utils';
+import React, { SetStateAction } from 'react';
 import {
     Select,
     SelectContent,
@@ -23,7 +24,7 @@ import {
     SelectValue
 } from '../ui/select';
 import { Skeleton } from '../ui/skeleton';
-import { Button } from '../ui/button';
+import PaginationComponent from './pagination-table';
 
 interface IOptionFilter<T> {
     filterHeader: boolean;
@@ -37,26 +38,30 @@ interface IOptionFilter<T> {
 interface IDataTable<T extends RowData> {
     // options?: IOptionFilter<T>;
     table: TableType<T>;
-    handlePreviousPage: () => void;
-    handleNextPage: () => void;
+    // handlePreviousPage: () => void;
+    // handleNextPage: () => void;
     pageIndex: number;
     pageCount: number;
     isLoading: boolean;
     setPageSize: (value: PageSize) => void;
+    setPageIndex: React.Dispatch<SetStateAction<number>>;
     pageSize: PageSize;
 }
 
 export const pageSizeOption = [2, 5, 10, 20, 50, 100];
 export type PageSize = typeof pageSizeOption[number];
-
+const alignMap = {
+    "left": "text-start",
+    "right": "text-end",
+    "center": "text-center"
+};
 const DataTable = <T,>({
     table,
     pageIndex,
     pageCount,
-    handlePreviousPage,
-    handleNextPage,
     isLoading,
     setPageSize,
+    setPageIndex,
     pageSize
 }: IDataTable<T>) => {
     return (
@@ -72,6 +77,8 @@ const DataTable = <T,>({
                                         <EachElement
                                             of={headerGroup.headers}
                                             render={(header) => {
+                                                const align = (header.column.columnDef as CustomColumnDef<T>).alignItem ?? 'left';
+
                                                 return (
                                                     <TableHead key={header.id} style={{
                                                         width: `${header.getSize()}px`,
@@ -79,10 +86,14 @@ const DataTable = <T,>({
                                                         minWidth: `${header.getSize()}px`,
                                                     }} >
                                                         {header.isPlaceholder ? null : (
-                                                            flexRender(
-                                                                header.column.columnDef.header,
-                                                                header.getContext()
-                                                            )
+                                                            <div className={cn(
+                                                                alignMap[align]
+                                                            )}>
+                                                                {flexRender(
+                                                                    header.column.columnDef.header,
+                                                                    header.getContext()
+                                                                )}
+                                                            </div>
                                                         )}
                                                     </TableHead>
                                                 );
@@ -105,15 +116,19 @@ const DataTable = <T,>({
                                         <EachElement
                                             of={row.getVisibleCells()}
                                             render={(cell) => {
+                                                const align = (cell.column.columnDef as CustomColumnDef<T>).alignItem ?? 'left';
                                                 return (
                                                     <TableCell style={{
                                                         width: `${cell.column.getSize()}px`,
                                                         maxWidth: `${cell.column.getSize()}px`,
                                                         minWidth: `${cell.column.getSize()}px`,
-                                                        whiteSpace:"normal",
-                                                        wordWrap:"break-word",
-                                                        overflowWrap:"break-word"
-                                                    }} key={cell.id} >
+                                                        whiteSpace: "normal",
+                                                        wordWrap: "break-word",
+                                                        overflowWrap: "break-word"
+                                                    }} className={cn(
+                                                        alignMap[align]
+                                                    )}
+                                                        key={cell.id} >
                                                         {flexRender(
                                                             cell.column.columnDef.cell,
                                                             cell.getContext()
@@ -180,7 +195,14 @@ const DataTable = <T,>({
                     </SelectContent>
                 </Select>
                 <div className="space-x-2">
-                    <Button
+
+                    <PaginationComponent
+                        currentPage={pageIndex + 1}
+                        totalPages={pageCount}
+                        onPageChange={(p) => {
+                            setPageIndex(p -1);
+                        }} />
+                    {/* <Button
                         variant="outline"
                         size="sm"
                         onClick={handlePreviousPage}
@@ -188,6 +210,7 @@ const DataTable = <T,>({
                     >
                         Previous
                     </Button>
+                    
                     <Button
                         variant="outline"
                         size="sm"
@@ -195,7 +218,7 @@ const DataTable = <T,>({
                         disabled={(pageIndex + 1 === pageCount) || !table.getRowModel().rows?.length}
                     >
                         Next
-                    </Button>
+                    </Button> */}
                 </div>
             </div>
         </div >

@@ -1,5 +1,5 @@
 import React from 'react';
-import MemberClient from './client/MemberClient';
+import MemberClient from './client/member-client';
 const MemberPage = async () => {
     return (
         <div>

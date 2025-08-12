@@ -34,16 +34,18 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider session={null}>
-          <QueryClientProvider>
-            <ThemeProvider>
+        <ThemeProvider>
+          <AuthProvider session={null}>
+            <QueryClientProvider>
+
               <main className="min-h-screen">{children}</main>
               <DialogProvider />
               <DrawerProvider />
-              <Toaster/>
-            </ThemeProvider>
-          </QueryClientProvider>
-        </AuthProvider>
+              <Toaster />
+
+            </QueryClientProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

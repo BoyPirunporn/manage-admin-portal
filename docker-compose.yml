@@ -1,5 +1,8 @@
 services:
   cloud-image:
+    mem_limit: 50m
+    memswap_limit: 50m
+    cpus: 0.05
     image: nginx
     container_name: cloud-image-provider
     volumes:

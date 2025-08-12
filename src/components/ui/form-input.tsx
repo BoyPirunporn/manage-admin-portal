@@ -94,7 +94,7 @@ export function FormInputField<T extends FieldValues>(props: FormInputFieldProps
                 uri={(props as AutocompleteVariantProps<T>).uri}
               />
             ) : (
-              <Input {...field} placeholder={placeholder} type={(props as InputVariantProps<T>).type} className='w-full' />
+              <Input {...field} autoComplete='off' placeholder={placeholder} type={(props as InputVariantProps<T>).type} className='w-full' />
             )}
           </FormControl>
           <FormMessage />

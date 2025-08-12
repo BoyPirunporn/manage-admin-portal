@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { apiRequest } from "../_utils/api-request";
+import { apiRequest, responseError } from "../_utils/api-request";
 import { logger } from "@/lib/utils";
 
 export const POST = async (req: NextRequest) => {
@@ -24,9 +24,6 @@ export const POST = async (req: NextRequest) => {
         });
     } catch (error) {
         logger.error("Save activity log failed ", error);
-        return NextResponse.json({
-            message: (error as Error).message,
-            status: 500
-        });
+        return responseError(error);
     }
 };

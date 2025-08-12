@@ -32,7 +32,7 @@ const MenuPage = () => {
       <GlobalDataTable
         columns={menuItemColumn}
         apiUrl={'/api/menu'}
-        initialPageSize={2}
+        // initialPageSize={2}
         searchCriteria={[
           {
             column: "parent",

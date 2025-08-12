@@ -1,7 +1,7 @@
 import { logger } from "@/lib/utils";
 import { ResponseApi } from "@/model";
 import { NextRequest, NextResponse } from "next/server";
-import { apiRequest } from "../../_utils/api-request";
+import { apiRequest, report, responseError } from "../../_utils/api-request";
 
 export const POST = async (req: NextRequest) => {
     const body = await req.json();
@@ -19,9 +19,6 @@ export const POST = async (req: NextRequest) => {
             status: 201
         });
     } catch (error) {
-        return NextResponse.json({
-            status: 500,
-            message: (error as Error).message
-        }, { status: 500 });
+        return responseError(error);
     }
 };
