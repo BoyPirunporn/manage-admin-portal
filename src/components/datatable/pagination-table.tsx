@@ -87,7 +87,7 @@ function PaginationComponent({ currentPage, totalPages, onPageChange }: Props) {
               if (currentPage < totalPages) onPageChange(currentPage + 1);
             }}
             disabled={currentPage === totalPages}
-            className="disabled:hover:bg-inherit disabled:cursor-not-allowed"
+            className="disabled:hover:cursor-not-allowed"
           />
         </PaginationItem>
       </PaginationContent>

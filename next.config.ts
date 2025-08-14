@@ -2,9 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  devIndicators: false ,
-  images:{
-    domains:["localhost"]
+  devIndicators: false,
+  swcMinify: true,
+  experimental: {
+  },
+  images: {
+    unoptimized: true,
+    domains: ["localhost"]
   }
 };
 

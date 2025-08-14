@@ -2,16 +2,14 @@
 import GlobalDataTable from '@/components/datatable/global-datatable';
 import { Button } from '@/components/ui/button';
 import useStoreDrawer from '@/stores/store-drawer';
-import dynamic from 'next/dynamic';
-import { memberColumn } from '../columnDef/member-column';
+import { useStoreUser } from '@/stores/store-user';
 import Link from 'next/link';
+import { memberColumn } from '../columnDef/member-column';
 
 
-const FormMemberInput = dynamic(() => import("../[id]/components/form-member-input"), {
-  ssr: false
-});
+
 const MemberClient = () => {
-
+  const { user: session } = useStoreUser();
   const drawer = useStoreDrawer();
   const handAdd = () => {
     // drawer.openDrawer({
@@ -25,9 +23,11 @@ const MemberClient = () => {
     <div>
       <div className='mb-5 flex'>
         <h1 className='text-xl font-bold'>Membership</h1>
-        <Button variant={"default"} className='ml-auto min-w-[100px] border' asChild>
-          <Link href={"/settings/member/create"}>Add</Link>
-        </Button>
+        {session?.user?.roles.map(e => e.toUpperCase()).includes("MEMBER_CREATE") && (
+          <Button variant={"default"} className='ml-auto min-w-[100px] border' asChild>
+            <Link href={"/settings/member/create"}>Add</Link>
+          </Button>
+        )}
       </div>
 
 

@@ -1,12 +1,10 @@
 "use client";
 
 import {
-    BadgeCheck,
-    Bell,
     ChevronsUpDown,
-    CreditCard,
+    KeyRound,
     LogOut,
-    Sparkles,
+    User2
 } from "lucide-react";
 
 import {
@@ -29,14 +27,19 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from "@/components/ui/sidebar";
-import { signOut, useSession } from "next-auth/react";
-import Link from "next/link";
 import { useActivityLog } from "@/hooks/use-activity-log";
 import { useStoreMenu } from "@/stores/store-menu";
+import { useStoreUser } from "@/stores/store-user";
+import { signOut } from "next-auth/react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export function NavUser() {
     const { isMobile } = useSidebar();
-    const { data: session } = useSession();
+    const { user: session } = useStoreUser();
+    const router = useRouter();
+   
     return (
         <SidebarMenu>
             <SidebarMenuItem>
@@ -51,8 +54,8 @@ export function NavUser() {
                                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-medium">{"admin"}</span>
-                                <span className="truncate text-xs">{"email@email.com"}</span>
+                                <span className="truncate font-medium">{session?.user?.firstName}</span>
+                                <span className="truncate text-xs">{session?.user?.email}</span>
                             </div>
                             <ChevronsUpDown className="ml-auto size-4" />
                         </SidebarMenuButton>
@@ -78,13 +81,13 @@ export function NavUser() {
                         <DropdownMenuGroup>
                             <DropdownMenuItem asChild>
                                 <Link href={"/settings/profile"} onClick={() => useActivityLog().log("CLICK_MENU", "USER:PROFILE", { form: "menu-user" })}>
-                                    <BadgeCheck />
+                                    <User2 />
                                     Profile
                                 </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
                                 <Link href={"/settings/change-password"} onClick={() => useActivityLog().log("CLICK_MENU", "USER:CHANGE_PASSWORD", { form: "menu-user" })}>
-                                    <BadgeCheck />
+                                    <KeyRound />
                                     Change password
                                 </Link>
                             </DropdownMenuItem>
@@ -93,10 +96,11 @@ export function NavUser() {
                         <DropdownMenuItem onClick={async () => {
                             await useActivityLog().log("SIGNOUT", "USER:SIGNOUT", { form: "menu-user" });
                             await signOut({
-                                redirect: true,
-                                callbackUrl: "/auth"
+                                redirect: false,
                             });
                              useStoreMenu.getState().clear();
+                             useStoreUser.getState().clearUser()
+                             router.push("/auth")
                         }}>
                             <LogOut />
                             Log out

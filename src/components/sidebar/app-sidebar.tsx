@@ -19,6 +19,7 @@ import { useActivityLog } from '@/hooks/use-activity-log';
 import { EachElement } from '@/lib/utils';
 import { MenuModel } from '@/model';
 import { useStoreMenu } from '@/stores/store-menu';
+import { useStoreUser } from '@/stores/store-user';
 import { Avatar } from '@radix-ui/react-avatar';
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
@@ -26,7 +27,6 @@ import { usePathname } from 'next/navigation';
 import React from 'react';
 import { Skeleton } from '../ui/skeleton';
 import { NavUser } from './nav-user';
-import { useSession } from 'next-auth/react';
 
 
 const buildMenu = (menus: MenuModel[], pathname: string, closeSideBar: () => void) => {
@@ -70,13 +70,12 @@ const buildMenu = (menus: MenuModel[], pathname: string, closeSideBar: () => voi
     });
 };
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    const { status } = useSession();
-    console.log(status)
+    const { user: session } = useStoreUser();
     const pathname = usePathname(); // ✅ ปลอดภัย เรียก hook ด้านบนสุด
     const { isMobile, setOpenMobile } = useSidebar();
     const { menus, setMenus } = useStoreMenu();
     React.useEffect(() => {
-        if (status === "authenticated" && !menus) {
+        if (session && !menus) {
             // fetch once
             (async () => {
                 try {
@@ -90,7 +89,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 }
             })();
         }
-    }, [status,menus, setMenus]);
+    }, [session, menus, setMenus]);
 
     return (
         <Sidebar {...props}>

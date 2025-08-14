@@ -7,19 +7,15 @@ import { apiRequest, report } from "@/app/api/_utils/api-request";
 
 export async function refreshAccessToken(token: JWT) {
   try {
-    const refreshed = await apiRequest<ResponseApiWithPayload<{
-            token: string;
-            refreshToken: string;
-            roles: string[];
-            firstName: string;
-            lastName: string;
-            image: string;
-          }>>( {
-      url:"/api/v1/auth/refresh-token",
+    const res = await fetch(process.env.API_SERVICE + "/api/v1/auth/refresh-token", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      data: {refreshToken: token.refreshToken},
+      body: JSON.stringify({ refreshToken: token.refreshToken }),
     });
+
+    const refreshed = await res.json();
+
+    if (!res.ok) return { ...token, error: "RefreshAccessTokenError" };
 
     return {
       ...token,
@@ -28,9 +24,8 @@ export async function refreshAccessToken(token: JWT) {
       refreshToken: refreshed.payload.refreshToken,
     };
   } catch (error) {
-    console.log(error)
     console.error("Refresh error:", error);
-    return { ...token, error: "RefreshAccessTokenError" };
+    return { ...token as JWT, error: "RefreshAccessTokenError" };
   }
 }
 
@@ -52,7 +47,12 @@ export const authOptions: NextAuthOptions = {
             headers: { "Content-Type": "application/json" },
             data: credentials,
           });
-         
+          // if (!res.ok) {
+          //   // const error = JSON.stringify(await res.text());
+          //   const error = await res.json();
+          //   logger.debug(error);
+          //   throw new Error(error && error.message ? error.message : "Invalid Credential");
+          // }
           const user = res as ResponseApiWithPayload<{
             token: string;
             refreshToken: string;
@@ -60,11 +60,20 @@ export const authOptions: NextAuthOptions = {
             firstName: string;
             lastName: string;
             image: string;
-            menus: MenuModel[];
+            // menus: MenuModel[];
           }>;
-          logger.debug({ menu: user.payload.menus });
+          logger.debug("USER PAYLOAD "+user.payload);
+
+          // const menuRequest = await fetch(process.env.API_SERVICE + "/api/v1/menu", {
+          //   headers: {
+          //     "Content-Type": "application/json"
+          //   }
+          // });
+
+          // const responseMenu = await menuRequest.json();
 
           const authentication = {
+            // id: "1",
             email: credentials?.email,
             accessToken: user.payload.token,
             refreshToken: user.payload.refreshToken,
@@ -84,7 +93,6 @@ export const authOptions: NextAuthOptions = {
             // }) //TODO:: ดึงจาก api 
           } as User;
 
-          logger.debug({ authentication });
           return authentication;
         } catch (error) {
           throw new Error(report(error));
@@ -93,7 +101,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   pages: {
-    signIn: "/",
+    signIn: "/auth",
   },
   session: { strategy: "jwt" },
   cookies: {
@@ -147,7 +155,6 @@ export const authOptions: NextAuthOptions = {
         return {
           ...token,
           error: "RefreshAccessTokenError",
-
         };
       }
     },

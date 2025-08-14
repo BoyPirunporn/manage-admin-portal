@@ -7,10 +7,6 @@ const ActivityLogsPage = () => {
     <div>
         <GlobalDataTable columns={[
             {
-                accessorKey:"id",
-                header:"Id"
-            },
-            {
                 accessorKey:"action",
                 header:"Action"
             },

@@ -60,7 +60,6 @@ function GlobalDataTable<T extends RowData>({
                     },
                 })), // optional
             };
-            logger.debug(payload);
             try {
                 const res = await axios<DataTablesOutput<T>>(`http://localhost:3000/${apiUrl}`, {
                     method: "POST",

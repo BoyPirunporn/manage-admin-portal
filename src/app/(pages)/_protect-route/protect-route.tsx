@@ -3,26 +3,26 @@ import { Button } from '@/components/ui/button';
 import { useActivityLog } from '@/hooks/use-activity-log';
 import { useStoreMenu } from '@/stores/store-menu';
 import useStoreModal from '@/stores/store-model';
-import { signOut, useSession } from 'next-auth/react';
+import { useStoreUser } from '@/stores/store-user';
+import { signOut } from 'next-auth/react';
 import React from 'react';
 
 const ProtectRoute = ({
     children
-}:{
-    children:React.ReactElement
+}: {
+    children: React.ReactElement;
 }) => {
-    const { data: session } = useSession();
-
+    const { user: session } = useStoreUser();
     React.useEffect(() => {
 
         if (session?.error || session?.error === "RefreshAccessTokenError") {
-            signOut({ redirect:false});
-            useStoreMenu.getState().clear()
-            useActivityLog().log("SIGNOUT", "TOKEN:EXPIRED")
+            signOut({ redirect: false });
+            useStoreMenu.getState().clear();
+            useActivityLog().log("SIGNOUT", "TOKEN:EXPIRED");
             useStoreModal.getState().openModal({
                 title: "UnAuthorization",
                 showCloseButton: false,
-                onInteractOutside:false,
+                onInteractOutside: false,
                 content: (
                     <div className='flex flex-col gap-3'>
                         <p>{session.error}</p>
@@ -32,7 +32,7 @@ const ProtectRoute = ({
             });
         }
     }, [session]);
-   
+
     return children;
 };
 

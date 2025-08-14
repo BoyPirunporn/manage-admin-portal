@@ -25,7 +25,6 @@ export async function apiRequest<T = unknown>(
   const controller = new AbortController();
   const session = await getServerSession(authOptions);
   const token = session?.accessToken;
-  console.log({ session });
   if (config.signal) {
     // ถ้า config.signal ถูก abort ให้ cancel axios ด้วย
     config.signal.addEventListener?.("abort", () => {

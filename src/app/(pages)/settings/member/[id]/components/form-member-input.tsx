@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/form';
 import { FormInputField } from '@/components/ui/form-input';
 import { Label } from '@/components/ui/label';
-import { EachElement } from '@/lib/utils';
+import { EachElement, logger } from '@/lib/utils';
 import { MenuModel, MenuModelWithRoleMenuPermission, PermissionModel, UserModel, UserRoleModel } from '@/model';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
@@ -28,6 +28,9 @@ const roleSchema: z.ZodType<Omit<UserRoleModel, "permissions" | "createdAt" | "u
 const menuItemSchema = z.object({
   id: z.number(),
   title: z.string(),
+  parent: z.object({
+    id: z.number()
+  }).nullable(),
   permissions: z.array(z.object({
     id: z.number(),
     name: z.string(),
@@ -70,11 +73,22 @@ const FormMemberInput = ({
 
 
 
-  const [accordionValue, setAccordionValue] = React.useState<string | undefined>(undefined);
   const [checkedPermissions, setCheckedPermissions] = React.useState<Record<string, boolean>>({});
 
-  const handleSubmit = (values: MemberSchema) => {
+  const handleSubmit = async (values: MemberSchema) => {
     console.log("Submit:", values, checkedPermissions);
+    try {
+      const response = await fetch("http://localhost:3000/api/user-management", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values)
+      });
+      console.log(await response.json())
+    } catch (error) {
+      logger.info(error);
+    }
   };
 
 
@@ -99,6 +113,9 @@ const FormMemberInput = ({
           {
             id: menu.id!,
             title: menu.title,
+            parent: menu.parent ? {
+              id: menu.parent?.id!,
+            } : null,
             permissions: checked
               ? [{ id: permission.id!, name: permission.name }]
               : [],
@@ -128,7 +145,9 @@ const FormMemberInput = ({
     },
     [form]
   );
-  
+
+  console.log(form.formState.errors);
+
   const sortedPermissions = React.useMemo(
     () =>
       [...permissions].sort((a, b) =>
