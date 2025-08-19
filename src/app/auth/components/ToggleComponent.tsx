@@ -24,7 +24,7 @@ const ToggleComponent = ({
                 >
                     <h1>Admin Login</h1>
                     <p >Sign in to manage your store, view reports, and access admin features</p>
-                    <Button onClick={() => setActive(false)} variant={"outline"} className='mt-3'>Sign In</Button>
+                    {/* <Button onClick={() => setActive(false)} variant={"outline"} className='mt-3'>Sign In</Button> */}
                 </div>
 
                 <div className="toggle-content"
@@ -32,7 +32,7 @@ const ToggleComponent = ({
                 >
                     <h1>Welcome!</h1>
                     <p>Join us to enjoy exclusive deals and access all features in our store</p>
-                    <Button onClick={() => setActive(true)} variant={"outline"} className='mt-3'>Sign Up</Button>
+                    {/* <Button onClick={() => setActive(true)} variant={"outline"} className='mt-3'>Sign Up</Button> */}
                 </div>
             </div>
         </div>

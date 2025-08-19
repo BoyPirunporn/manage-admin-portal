@@ -24,6 +24,7 @@ interface BaseProps<T extends FieldValues, TName extends FieldPath<T> = FieldPat
   placeholder?: string;
   rows?: number;
   defaultValue?: FieldPathValue<T, TName>;
+  readonly?: boolean;
 
 }
 
@@ -62,6 +63,7 @@ export function FormInputField<T extends FieldValues>(props: FormInputFieldProps
     name,
     label,
     placeholder,
+    readonly = false,
     variant = 'input',
     rows = 3,
     customSelectChildren,
@@ -72,12 +74,12 @@ export function FormInputField<T extends FieldValues>(props: FormInputFieldProps
       control={control}
       name={name}
       defaultValue={defaultValue}
-      render={({ field,...propsForm }) => (
+      render={({ field, ...propsForm }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
             {variant === 'textarea' ? (
-              <textarea {...field} placeholder={placeholder} rows={rows} className="w-full rounded border p-2" />
+              <textarea readOnly={readonly} {...field} placeholder={placeholder} rows={rows} className="w-full rounded border p-2" />
             ) : variant === "checkbox" ? (
               renderCheckbox()
             ) : variant === 'select' ? (
@@ -85,6 +87,7 @@ export function FormInputField<T extends FieldValues>(props: FormInputFieldProps
             ) : variant === "autocomplete" ? (
               <FormAutocomplete
                 value={field.value}
+                disabled={readonly}
                 onChange={(data, value) => {
                   const mapValue = (props as AutocompleteVariantProps<T>).mapValueBeforSet(data, value);
                   field.onChange(mapValue);
@@ -94,7 +97,7 @@ export function FormInputField<T extends FieldValues>(props: FormInputFieldProps
                 uri={(props as AutocompleteVariantProps<T>).uri}
               />
             ) : (
-              <Input {...field} autoComplete='off' placeholder={placeholder} type={(props as InputVariantProps<T>).type} className='w-full' />
+              <Input {...field} autoComplete='off' readOnly={readonly} placeholder={placeholder} type={(props as InputVariantProps<T>).type} className='w-full' />
             )}
           </FormControl>
           <FormMessage />
@@ -105,6 +108,7 @@ export function FormInputField<T extends FieldValues>(props: FormInputFieldProps
 
   function renderSelect(field: ControllerRenderProps<T, Path<T>>): React.ReactNode {
     const { options } = props as SelectVariantProps<T>;
+    const [open, setOpen] = useState(false);
     return (
       <Select value={field.value.toString()} onValueChange={field.onChange}>
         <SelectTrigger className="w-full">
@@ -142,7 +146,7 @@ export function FormInputField<T extends FieldValues>(props: FormInputFieldProps
                 <FormControl>
                   <Checkbox
                     checked={field.value?.includes(item.value)}
-                    onCheckedChange={(checked) => {
+                    onCheckedChange={readonly ? undefined : (checked) => {
                       return checked
                         ? field.onChange([...field.value, item])
                         : field.onChange(
@@ -150,7 +154,8 @@ export function FormInputField<T extends FieldValues>(props: FormInputFieldProps
                             (value: Option) => value !== item
                           )
                         );
-                    }} />
+                    }}
+                  />
                 </FormControl>
                 <FormLabel className="text-sm font-normal">
                   {item.label}
@@ -177,13 +182,13 @@ export function FormAutocomplete<T>({
   name,
   onChange,
   placeholder = "Select...",
-  disabled,
+  disabled = false,
   transformFn,
   uri
 }: FormAutocompleteProps<T>) {
   const [open, setOpen] = React.useState(false);
   const [commandInput, setCommandInput] = useState<string>("");
-  const [selected,setSelected] = useState("")
+  const [selected, setSelected] = useState("");
   const debouncedValue = useDebounce(commandInput, 500);
 
   const { data: originalData } = useQuery<ResponseApiWithPayload<T[]>, Error>({
@@ -217,16 +222,17 @@ export function FormAutocomplete<T>({
     () => transformFn?.(payload) ?? [],
     [payload, transformFn]
   );
-  
+
+  console.log({disabled})
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open && !disabled} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           type="button"
           role="combobox"
           variant="outline"
-          aria-expanded={open}
+          aria-expanded={open && !disabled}
           disabled={disabled}
           className="w-full min-w-0 justify-between"
         >

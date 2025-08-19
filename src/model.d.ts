@@ -57,7 +57,7 @@ interface UserRoleModel {
     id?: number | null;
     name: string;
     description?: string | null;
-    permissions: RolePermission[];
+    roleMenuPermissions: RoleMenuAndPermissionModel[];
     createdAt: string;
     updatedAt: string;
 }
@@ -85,10 +85,10 @@ interface UserModel {
     lastName: string;
     password: string;
     image?: string;
-    authProviders: UserAuthProviderModel[];
+    // authProviders: UserAuthProviderModel[];
     roles: UserRoleModel[];
-    createdAt: string;
-    updatedAt: string;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 interface UserAuthProviderModel {

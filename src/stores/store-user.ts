@@ -1,6 +1,5 @@
 // stores/user-store.ts
-import { UserModel } from '@/model';
-import { Session, User } from 'next-auth';
+import { Session } from 'next-auth';
 import { create } from 'zustand';
 
 interface UserState {

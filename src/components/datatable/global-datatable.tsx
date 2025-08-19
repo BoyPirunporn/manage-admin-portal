@@ -1,5 +1,5 @@
 'use client';
-import { logger } from '@/lib/utils';
+import { report } from '@/app/api/_utils/api-request';
 import { CustomColumnDef, DataTablesOutput } from '@/model';
 import useStoreModal from '@/stores/store-model';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
@@ -7,14 +7,14 @@ import { getCoreRowModel, RowData, useReactTable } from '@tanstack/react-table';
 import axios from 'axios';
 import { useState } from 'react';
 import DataTable, { PageSize } from './data-table';
-import { report } from '@/app/api/_utils/api-request';
+import { logger } from '@/lib/utils';
 
-interface SearchCriteria {
-column: string;
-        value: string;
-        searchable: boolean;
-        orderable: boolean;
-        regex?: boolean;
+export interface SearchCriteria {
+    column: string;
+    value: string;
+    searchable: boolean;
+    orderable: boolean;
+    regex?: boolean;
 }
 export interface GlobalDataTableProps<T extends RowData> {
     columns: CustomColumnDef<T>[];
@@ -67,11 +67,10 @@ function GlobalDataTable<T extends RowData>({
                     data: payload,
                 });
                 return res.data as DataTablesOutput<T>;
-            } catch (error) {
-                // logger.debug({error})
-                console.log("ERROR -> ", error);
+            } catch (error:any) {
+                logger.debug({error})
                 storeModal.openModal({
-                    title: "Error",
+                    title: error?.name,
                     content: report(error)
                 });
                 return null as unknown as DataTablesOutput<T>;

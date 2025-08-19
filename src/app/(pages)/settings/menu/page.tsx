@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { menuItemColumn } from './column-def';
 import MenuInputForm from './menu-input-form';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
+import Heading from '@/components/heading';
 
 
 const MenuPage = () => {
@@ -22,7 +23,7 @@ const MenuPage = () => {
   return (
     <div>
       <div className='mb-5 flex'>
-        <h1 className='text-xl font-bold'>Menu</h1>
+        <Heading title={'Menu'} description='Menu management'/>
         <Button className='ml-auto min-w-[100px]' onClick={handAdd}>Add</Button>
       </div>
       <div className="mb-10 flex">

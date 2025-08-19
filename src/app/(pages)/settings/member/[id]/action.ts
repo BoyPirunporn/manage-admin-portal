@@ -1,8 +1,18 @@
 "use server";
 
 import { apiRequest, report } from "@/app/api/_utils/api-request";
-import {  MenuModelWithRoleMenuPermission, PermissionModel, ResponseApiWithPayload, UserRoleModel } from "@/model";
-
+import { MenuModelWithRoleMenuPermission, PermissionModel, ResponseApiWithPayload, UserRoleModel } from "@/model";
+import { MemberSchema } from "./components/form-member-input";
+import { isAxiosError } from "axios";
+import { redirect } from "next/navigation";
+const handleError = (error: unknown) => {
+    if(isAxiosError(error)){
+        if(error.response?.status === 401){
+           throw redirect("/auth")
+        }
+    }
+    throw error;
+}
 export const getRoles = async () => {
     try {
         const response = await apiRequest<ResponseApiWithPayload<UserRoleModel[]>>({
@@ -11,7 +21,7 @@ export const getRoles = async () => {
         });
         return response.payload;
     } catch (err) {
-        throw err;
+       throw  handleError(err);
     }
 };
 export const getMenuItems = async () => {
@@ -20,10 +30,9 @@ export const getMenuItems = async () => {
             url: "/api/v1/menu/all",
             method: "GET"
         });
-        console.log(response.payload)
         return response.payload;
     } catch (err) {
-        throw err;
+      throw   handleError(err);
     }
 };
 export const getPermissions = async () => {
@@ -34,7 +43,23 @@ export const getPermissions = async () => {
         });
         return response.payload;
     } catch (err) {
-        console.log(report(err))
-        throw err;
+        console.log(report(err));
+        throw  handleError(err);
+    }
+};
+
+export const getUser = async (id: string | number) => {
+    try {
+        if(!Number(id)){
+            return null;
+        }
+        const response = await apiRequest<ResponseApiWithPayload<MemberSchema>>({
+            url: "/api/v1/user-management/" + Number(id),
+            method: "GET"
+        });
+        return response.payload;
+    } catch (err) {
+        console.log(report(err));
+        throw handleError(err);
     }
 };

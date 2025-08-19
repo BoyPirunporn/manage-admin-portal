@@ -27,6 +27,7 @@ import { usePathname } from 'next/navigation';
 import React from 'react';
 import { Skeleton } from '../ui/skeleton';
 import { NavUser } from './nav-user';
+import { useSession } from 'next-auth/react';
 
 
 const buildMenu = (menus: MenuModel[], pathname: string, closeSideBar: () => void) => {
@@ -38,9 +39,9 @@ const buildMenu = (menus: MenuModel[], pathname: string, closeSideBar: () => voi
                     defaultOpen
                     className="group/collapsible p-[calc(var(--spacing)_*_2)]"
                 >
-                    <CollapsibleTrigger className='flex flex-row items-center w-full cursor-pointer'>
+                    <CollapsibleTrigger className='flex flex-row items-center w-full cursor-pointer '>
                         {menu.title}
-                        <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                        <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90 data-[state=open]:transition-transform duration-200" />
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                         <div className='mt-2 flex flex-col gap-2'>
@@ -75,14 +76,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { isMobile, setOpenMobile } = useSidebar();
     const { menus, setMenus } = useStoreMenu();
     React.useEffect(() => {
-        if (session && !menus) {
+        if (session && (!menus)) {
             // fetch once
             (async () => {
+                console.log("FETCHING MENU");
                 try {
                     const r = await fetch("http://localhost:3000/api/menu");
                     if (!r.ok) throw new Error("Failed to load menu");
                     const json = await r.json();
-                    console.log({ json });
                     setMenus(json); // store
                 } catch (e) {
                     console.error(e);

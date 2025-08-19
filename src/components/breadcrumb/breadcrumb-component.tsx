@@ -11,7 +11,8 @@ import { MenuModel } from '@/model';
 import { useStoreMenu } from '@/stores/store-menu';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useMemo } from 'react';
+import React from 'react';
+
 export function findBreadcrumb(
     pathname: string,
     menus: MenuModel[]
@@ -23,7 +24,6 @@ export function findBreadcrumb(
                 path.unshift({ title: node.title, url: node.url });
                 return true;
             }
-
             // ถ้ามี children ก็วนต่อ
             if (node.items && node.items.length > 0) {
                 const found = dfs(node.items);
@@ -32,7 +32,7 @@ export function findBreadcrumb(
                     return true;
                 }
             }
-        })
+        });
 
         return false;
     };
@@ -43,7 +43,24 @@ export function findBreadcrumb(
 export const BreadcrumbComponent = () => {
     const { menus } = useStoreMenu();
     const pathname = usePathname();
-    const crumbs =findBreadcrumb(pathname, menus!);
+
+    function findMenuByUrl(menus: MenuModel[], url: string): MenuModel | null {
+        for (const menu of menus) {
+            if (menu.url === url) return menu;
+            const found = findMenuByUrl(menu.items, url);
+            if (found) return found;
+        }
+        return null;
+    }
+    const crumbs = React.useMemo(() => {
+        const chain: MenuModel[] = [];
+        let current = findMenuByUrl(menus ?? [], pathname);
+        while (current) {
+            chain.unshift(current);
+            current = current.parent!;
+        }
+        return chain;
+    }, [pathname, menus]);
 
     if (crumbs.length === 0) return null;
     return (

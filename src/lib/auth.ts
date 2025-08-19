@@ -1,18 +1,19 @@
+import { apiRequest, report } from "@/app/api/_utils/api-request";
+import { MenuModelWithRoleMenuPermission, ResponseApiWithPayload } from "@/model";
 import { NextAuthOptions, Session, User } from "next-auth";
-import { JWT } from "next-auth/jwt";
+import { JWT, MenuMapped } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { logger } from "./utils";
-import { MenuModel, ResponseApiWithPayload } from "@/model";
-import { apiRequest, report } from "@/app/api/_utils/api-request";
 
 export async function refreshAccessToken(token: JWT) {
+  // logger.debug("Refreshing access token", { token });
   try {
-    const res = await fetch(process.env.API_SERVICE + "/api/v1/auth/refresh-token", {
+    const res = await fetch(process.env.API_SERVICE + "/api/v1/auth/refresh-tokens", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refreshToken: token.refreshToken }),
     });
-
+    console.log(res.status, res.statusText);
     const refreshed = await res.json();
 
     if (!res.ok) return { ...token, error: "RefreshAccessTokenError" };
@@ -60,9 +61,9 @@ export const authOptions: NextAuthOptions = {
             firstName: string;
             lastName: string;
             image: string;
-            // menus: MenuModel[];
+            menus: MenuModelWithRoleMenuPermission[];
           }>;
-          logger.debug("USER PAYLOAD "+user.payload);
+          logger.debug("USER PAYLOAD " + user.payload);
 
           // const menuRequest = await fetch(process.env.API_SERVICE + "/api/v1/menu", {
           //   headers: {
@@ -72,6 +73,21 @@ export const authOptions: NextAuthOptions = {
 
           // const responseMenu = await menuRequest.json();
 
+
+
+          const mapMenu = (menus: MenuModelWithRoleMenuPermission[] = []): MenuMapped[] => {
+            console.log(menus)
+            return menus.flatMap(menu => {
+              if (menu.items && menu.items.length > 0) {
+                return mapMenu(menu.items); // flatten child ลงมา
+              }
+              return {
+                title: menu.title,
+                url: menu.url!,
+                permissions: menu.roleMenuPermissions.map(r => r.permission.name),
+              };
+            });
+          };
           const authentication = {
             // id: "1",
             email: credentials?.email,
@@ -82,15 +98,7 @@ export const authOptions: NextAuthOptions = {
             image: user.payload.image,
             roles: user.payload.roles,
             accessTokenExpires: JSON.parse(atob(user.payload.token.split(".").at(1)!)).exp * 1000, //ที่ *1000 เพราะ ได้ค่าเป็น second เลยต่อง * 1000
-            // menus: user.payload.menus.map(menu => {
-            //   const mapMenu = (m: MenuModel): MenuModel => {
-            //     return {
-            //       ...m,
-            //       items: m.items?.map((child) => mapMenu(child)) || []
-            //     };
-            //   };
-            //   return mapMenu(menu);
-            // }) //TODO:: ดึงจาก api 
+            menus: mapMenu(user.payload.menus)
           } as User;
 
           return authentication;
@@ -117,13 +125,18 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user: User | undefined; }) {
+    async jwt({ token, trigger, user, session }) {
       // กรณีมี user ใหม่ (ตอน login หรือ session ใหม่)
+      if (trigger === "update" && session?.menus) {
+        token.menus = session.menus;
+        return token;
+      }
+
       if (user) {
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
         token.accessTokenExpires = user.accessTokenExpires; // สมมติเป็น ms
-        // token.menus = user.menus;
+        token.menus = user.menus;
         token.firstName = user.firstName;
         token.lastName = user.lastName;
         token.image = user.image;
@@ -145,8 +158,10 @@ export const authOptions: NextAuthOptions = {
       try {
         const refreshedToken = await refreshAccessToken(token);
         if (refreshedToken.error) {
-          logger.debug("ERROR REFRESH TOKEN");
-          throw Error(refreshedToken.error);
+          return {
+            ...token,
+            error: "RefreshAccessTokenError",
+          };
         }
         return refreshedToken;
       } catch (error) {
@@ -159,15 +174,19 @@ export const authOptions: NextAuthOptions = {
       }
     },
     async session({ session, token }: { session: Session, token: JWT; }) {
-      session.accessToken = token.accessToken;
-      // session.menus = token.menus;
+      session.accessToken = token.accessToken!;
+      session.refreshToken = token.refreshToken!;
       session.roles = token.roles;
+      session.menus = token.menus;
       session = {
         ...session,
         user: { ...session.user!, firstName: token.firstName, lastName: token.lastName, image: token.image, roles: token.roles }
       };
       if (token.error) {
         session.error = token.error;
+      }
+      if (token.menus) {
+        session.menus = token.menus;
       }
       return session;
     },

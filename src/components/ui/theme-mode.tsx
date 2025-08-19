@@ -24,7 +24,7 @@ const ThemeMode = () => {
     }, [theme]);
 
     return (
-        <div className='ml-auto'>
+        <div >
             <button
                 onClick={handMode}
                 className={cn(

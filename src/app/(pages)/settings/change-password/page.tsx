@@ -1,4 +1,5 @@
 "use client"
+import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { FormInputField } from '@/components/ui/form-input';
@@ -47,10 +48,7 @@ const ChangePasswordPage = () => {
   }
   return (
     <div className='flex flex-col gap-10'>
-      <div className="flex flex-col gap-1 justify-center">
-        <h1 className="text-xl md:text-2xl font-bold">Change Password</h1>
-        <p className="text-sm text-gray-400">Change password your account</p>
-      </div>
+      <Heading title={'Change Password'} description='Change password your account'/>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className='flex flex-col gap-5 min-w-[500px] m-auto'>
           <FormInputField  control={form.control} name='currentPassword' label='Current Password' placeholder='Current Password' type="password"/>

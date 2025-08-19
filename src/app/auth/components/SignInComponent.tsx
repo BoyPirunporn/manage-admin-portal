@@ -2,10 +2,9 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { FormInputField } from '@/components/ui/form-input';
 import { useActivityLog } from '@/hooks/use-activity-log';
-import { cn, logger } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import useStoreModal from '@/stores/store-model';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AxiosError } from 'axios';
 import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -48,7 +47,6 @@ const SignInComponent = ({
             }
             if (response?.ok) {
                 useActivityLog().log("SIGNIN", "CREDENTIAL", { from: "next-auth-provider" });
-                
                 window.location.href = "/";
             }
         } catch (error) {
@@ -60,7 +58,7 @@ const SignInComponent = ({
     };
     return (
         <div className={cn(
-            "signin-container",
+            "signin-container bg-primary",
             active && "signin-active "
         )}>
             <Form {...form}>

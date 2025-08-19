@@ -1,9 +1,8 @@
-import ColumnAction from "@/components/column-action";
+import ColumnAction from "@/components/datatable/column-action";
 import { CustomColumnDef, UserModel } from "@/model";
 import ImageProvider from "@/providers/ImageProvider";
 import useStoreDrawer from "@/stores/store-drawer";
-import dynamic from "next/dynamic";
-import React from 'react';
+import { useRouter } from "next/navigation";
 export const memberColumn: CustomColumnDef<UserModel>[] = [
     {
         accessorKey: "imageUrl",
@@ -33,22 +32,28 @@ export const memberColumn: CustomColumnDef<UserModel>[] = [
 
         header: "Action",
         alignItem: "center",
-        cell: ({ row }) =>
-            <ColumnAction handleEdit={() => {
-                const FormMemberInputLazy = dynamic(() => import('../[id]/components/form-member-input'), {
-                    ssr: false
-                });
-                useStoreDrawer.getState().openDrawer({
-                    title: "Edit " + row.original.firstName,
-                    content: (
-                        <React.Suspense fallback={<div>Loading...</div>}>
-                            <FormMemberInputLazy data={row.original} />
-                        </React.Suspense>
-                    ),
-
-                    size: "lg",
-                });
-            }}
-                handleView={() => { }} />
+        cell: ({ row }) => {
+            const router = useRouter();
+            return (
+                <ColumnAction
+                    target="MEMBER"
+                    metadata={{
+                        form: "settings/member",
+                        payload: {
+                            userId: row.original.id?.toString()
+                        }
+                    }}
+                    handleEdit={() => {
+                        router.push("/settings/member/" + row.original.id);
+                    }}
+                    handleView={() => {
+                        useStoreDrawer.getState().openDrawer({
+                            title: "Member Details",
+                            content: "settings/member/[id]",
+                            size: "lg",
+                        })
+                    }} />
+            );
+        }
     },
 ];

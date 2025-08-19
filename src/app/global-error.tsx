@@ -1,33 +1,64 @@
 'use client';
- 
-import { logger } from '@/lib/utils';
+
+import { Button } from '@/components/ui/button';
 import { AxiosError } from 'axios';
 import { useEffect } from 'react';
- 
+export class AppError extends Error {
+  statusCode: number;
+  digest?: string;
+
+  constructor(message: string, statusCode = 500, digest?: string) {
+    super(message);
+    this.name = "AppError";
+    this.statusCode = statusCode;
+    this.digest = digest;
+  }
+}
+
+export class AuthError extends AppError {
+  constructor(message = "Unauthorized", statusCode = 401) {
+    super(message, statusCode);
+    this.name = "AuthError";
+  }
+}
+
+export class PermissionError extends AppError {
+  constructor(message = "Forbidden", statusCode = 403) {
+    super(message, statusCode);
+    this.name = "PermissionError";
+  }
+}
+
+export class ApiError extends AppError {
+  constructor(message: string, statusCode = 500) {
+    super(message, statusCode);
+    this.name = "ApiError";
+  }
+}
 export default function GlobalError({
   error,
   reset,
 }: {
-  error: any & { digest?: string };
+  error: AppError;
   reset: () => void;
 }) {
   useEffect(() => {
-    
-    logger.error(error);
+    console.log({ error });
   }, [error]);
- 
+
   return (
-    <main className="flex h-full flex-col items-center justify-center">
-      <h2 className="text-center">Something went wrong!</h2>
-      <button
-        className="mt-4 rounded-md bg-blue-500 px-4 py-2 text-sm text-white transition-colors hover:bg-blue-400"
+    <main className="flex min-h-screen flex-col items-center justify-center gap-5">
+      <h2 className="text-center text-primary text-2xl md:text-7xl font-bold">Oop!! {error.statusCode}</h2>
+      <p className="text-md text-center">
+        {error.message ?? "Something went wrong, Please contact to administrator."}
+      </p>
+      <Button
         onClick={
-          // Attempt to recover by trying to re-render the invoices route
-          () => reset()
+          () => window.location.href = "/"
         }
       >
-        Try again
-      </button>
+        Go to Homepage
+      </Button>
     </main>
   );
 }

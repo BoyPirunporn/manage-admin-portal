@@ -1,4 +1,4 @@
-import ColumnAction from "@/components/column-action";
+import ColumnAction from "@/components/datatable/column-action";
 import { GlobalDataTableProps } from "@/components/datatable/global-datatable";
 import RenderIcon, { IconName } from "@/components/ui/render-icon";
 import { CustomColumnDef, MenuModel } from "@/model";
@@ -28,6 +28,13 @@ export const menuItemColumn: CustomColumnDef<MenuModel>[] = [
         cell: ({ row, getValue }) => {
             return (
                 <ColumnAction
+                    target="MENU"
+                    metadata={{
+                        form: "settings/menu",
+                        payload: {
+                            menuId: row.original.id?.toString()
+                        }
+                    }}
                     handleEdit={() => {
                         const GlobalDataTableLazy = dynamic<GlobalDataTableProps<MenuModel>>(() => import("@/components/datatable/global-datatable"), {
                             ssr: false,
@@ -37,17 +44,17 @@ export const menuItemColumn: CustomColumnDef<MenuModel>[] = [
                             size: "lg",
                             content: (
                                 <React.Suspense fallback={<div>Loading...</div>}>
-                                    <GlobalDataTableLazy 
-                                    queryKey={"parent-datatable-" + getValue()}
-                                     searchCriteria={[
-                                        {
-                                            column: "parent",
-                                            value: getValue() as string,
-                                            searchable: false,
-                                            orderable: false
-                                        }
-                                    ]} columns={menuItemColumn2} apiUrl={"/api/menu"} />
-                             </React.Suspense>
+                                    <GlobalDataTableLazy
+                                        queryKey={"parent-datatable-" + getValue()}
+                                        searchCriteria={[
+                                            {
+                                                column: "parent",
+                                                value: getValue() as string,
+                                                searchable: false,
+                                                orderable: false
+                                            }
+                                        ]} columns={menuItemColumn2} apiUrl={"/api/menu"} />
+                                </React.Suspense>
                             )
                         });
                     }}
@@ -78,35 +85,35 @@ export const menuItemColumn2: CustomColumnDef<MenuModel>[] = [
     {
         accessorKey: "id",
         header: "Action",
-        alignItem:"center",
+        alignItem: "center",
         cell: ({ row, getValue }) => {
             return (
                 <ColumnAction
-                handleEdit={() => {
-                    const GlobalDataTableLazy = dynamic<GlobalDataTableProps<MenuModel>>(() => import("@/components/datatable/global-datatable"), {
-                        ssr: false,
-                    });
-                    useStoreModal.getState().openModal({
-                        title: "Menu of " + row.original.title,
-                        size: "lg",
-                        content: (
-                            <React.Suspense fallback={<div>Loading...</div>}>
-                                <GlobalDataTableLazy queryKey={"parent-datatable-" + getValue()} searchCriteria={[
-                                    {
-                                        column: "parent",
-                                        value: getValue() as string,
-                                        searchable: false,
-                                        orderable: false
-                                    }
-                                ]} columns={menuItemColumn2} apiUrl={"/api/menu"} />
-                         </React.Suspense>
-                        )
-                    });
-                }}
-                handleView={() => {
-                    
-                }}
-            />
+                    handleEdit={() => {
+                        const GlobalDataTableLazy = dynamic<GlobalDataTableProps<MenuModel>>(() => import("@/components/datatable/global-datatable"), {
+                            ssr: false,
+                        });
+                        useStoreModal.getState().openModal({
+                            title: "Menu of " + row.original.title,
+                            size: "lg",
+                            content: (
+                                <React.Suspense fallback={<div>Loading...</div>}>
+                                    <GlobalDataTableLazy queryKey={"parent-datatable-" + getValue()} searchCriteria={[
+                                        {
+                                            column: "parent",
+                                            value: getValue() as string,
+                                            searchable: false,
+                                            orderable: false
+                                        }
+                                    ]} columns={menuItemColumn2} apiUrl={"/api/menu"} />
+                                </React.Suspense>
+                            )
+                        });
+                    }}
+                    handleView={() => {
+
+                    }}
+                />
             );
         }
     },

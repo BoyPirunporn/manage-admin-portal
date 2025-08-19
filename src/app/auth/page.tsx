@@ -43,7 +43,7 @@ export default function LoginPage() {
         )}
       >
         {/* Sign Up Form */}
-        <SignUpComponent active={active} handleToggle={handleToggle} />
+        {/* <SignUpComponent active={active} handleToggle={handleToggle} /> */}
 
         {/* Sign In Form */}
         <SignInComponent active={active} handleToggle={handleToggle} />

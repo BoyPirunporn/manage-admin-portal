@@ -1,7 +1,6 @@
-import ColumnAction from "@/components/column-action";
+import ColumnAction from "@/components/datatable/column-action";
 import { CustomColumnDef, UserRoleModel } from "@/model";
 import useStoreDrawer from "@/stores/store-drawer";
-import RoleAndPermissionForm from "./role-and-permission-form";
 import dynamic from "next/dynamic";
 
 export const roleColumnDef: CustomColumnDef<UserRoleModel>[] = [

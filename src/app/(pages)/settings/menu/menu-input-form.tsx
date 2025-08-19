@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { ComboBoxIcon } from '@/components/ui/combobox';
+import { ComboBoxIcon } from '@/components/ui/combobox-icon';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { FormInputField } from '@/components/ui/form-input';
 import { logger } from '@/lib/utils';

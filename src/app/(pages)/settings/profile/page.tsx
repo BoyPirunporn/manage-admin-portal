@@ -8,6 +8,7 @@ import ProfileConnect from './components/profile-connect';
 import SecuritySetting from './components/security/security-setting';
 import ActivateSession from './components/security/activate-session';
 import NotificationPreferences from './components/notification/notification-preferences';
+import Heading from '@/components/heading';
 
 const ProfilePage = () => {
   return (
@@ -17,22 +18,23 @@ const ProfilePage = () => {
           <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
-        <div className="flex flex-col gap-1 justify-center">
-          <h1 className="text-xl md:text-2xl font-bold">Account setting</h1>
-          <p className="text-sm text-gray-400">Manage your account settings and preferences</p>
-        </div>
+        <Heading title={'Account setting'} description='Manage your account settings and preferences'/>
       </div>
-      <Tabs defaultValue="profile" className="flex flex-col gap-2 space-y-6 mt-[2rem]">
+      <div className="flex flex-col gap-2 space-y-6 mt-[2rem]">
+        <ProfileDetail />
+        {/* <ProfileConnect /> */}
+      </div>
+      {/* <Tabs defaultValue="profile" className="flex flex-col gap-2 space-y-6 mt-[2rem]">
         <TabsList className='text-muted-foreground [&_[data-state=inactive]]:cursor-pointer inline-flex items-center rounded-lg h-auto w-full justify-start gap-6 bg-transparent p-0'>
-          <TabsTrigger value="profile" className='transition-all duration-300 data-[state=active]:text-blue-500 data-[state=active]:scale-105'>
+          <TabsTrigger value="profile" className='transition-all duration-300 data-[state=active]:text-primary data-[state=active]:border-primary  data-[state=active]:scale-105'>
             <RenderIcon name="User" />
             Profile
           </TabsTrigger>
-          <TabsTrigger value="security" className='transition-all duration-300 data-[state=active]:text-blue-500 data-[state=active]:scale-105'>
+          <TabsTrigger value="security" className='transition-all duration-300 data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:scale-105'>
             <RenderIcon name='Lock' />
             Security
           </TabsTrigger>
-          <TabsTrigger value="notification" className='transition-all duration-300 data-[state=active]:text-blue-500 data-[state=active]:scale-105'>
+          <TabsTrigger value="notification" className='transition-all duration-300 data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:scale-105'>
             <RenderIcon name="Bell" />
             Notification
           </TabsTrigger>
@@ -48,7 +50,7 @@ const ProfilePage = () => {
         <TabsContent value="notification" className='data-[state=inactive]:hidden animate-fadeIn flex-1 outline-none space-y-6'>
           <NotificationPreferences />
         </TabsContent>
-      </Tabs>
+      </Tabs> */}
     </div>
   );
 };
