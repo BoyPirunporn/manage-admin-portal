@@ -1,4 +1,3 @@
-import { Menu, MenuModelWithRoleMenuPermission } from "@/model";
 import "next-auth";
 
 declare module 'next-auth' {
@@ -11,14 +10,14 @@ declare module 'next-auth' {
         lastName: string;
         image: string;
         roles: string[];
-        menus: MenuMapped[];
+        permissions: PermissionNode[];
     }
 
     interface Session {
         user: Omit<User, "id"> | null;
         accessToken: string;
         refreshToken: string;
-        menus: MenuMapped[];
+        permissions: PermissionNode[];
         roles: string[];
         error?: string;
     }
@@ -33,15 +32,19 @@ declare module "next-auth/jwt" {
         refreshToken?: string;
         accessTokenExpires?: number;
         error?: string;
-        menus: MenuMapped[];
+        permissions: PermissionNode[];
         firstName: string;
         lastName: string;
         image: string;
         roles: string[];
     }
-    type MenuMapped = {
+    type PermissionNode = {
+        menuId?:string | null;
         title: string;
         url: string;
-        permissions: string[];
+        canView: boolean;
+        canCreate: boolean;
+        canUpdate: boolean;
+        canDelete: boolean;
     };
 }

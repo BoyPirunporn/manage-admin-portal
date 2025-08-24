@@ -1,7 +1,6 @@
 "use client";
 import { AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import RenderIcon from '@/components/ui/render-icon';
 import {
     Sidebar,
     SidebarContent,
@@ -16,8 +15,9 @@ import {
     useSidebar
 } from '@/components/ui/sidebar';
 import { useActivityLog } from '@/hooks/use-activity-log';
+import logger from '@/lib/logger';
 import { EachElement } from '@/lib/utils';
-import { MenuModel } from '@/model';
+import { MenuPermissionNode } from '@/model';
 import { useStoreMenu } from '@/stores/store-menu';
 import { useStoreUser } from '@/stores/store-user';
 import { Avatar } from '@radix-ui/react-avatar';
@@ -25,43 +25,45 @@ import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
+import ThemeColor from '../theme-color';
+import RenderIcon, { IconName } from '../ui/render-icon';
 import { Skeleton } from '../ui/skeleton';
+import ThemeMode from '../ui/theme-mode';
 import { NavUser } from './nav-user';
-import { useSession } from 'next-auth/react';
 
 
-const buildMenu = (menus: MenuModel[], pathname: string, closeSideBar: () => void) => {
+const buildMenu = (menus: MenuPermissionNode[], pathname: string, closeSideBar: () => void) => {
     return menus.map(menu => {
-        if (menu.items?.length && menu.isGroup) {
+        if (menu.children?.length && menu.isGroup) {
             return (
                 <Collapsible
-                    key={menu.title}
+                    key={menu.menuName}
                     defaultOpen
                     className="group/collapsible p-[calc(var(--spacing)_*_2)]"
                 >
                     <CollapsibleTrigger className='flex flex-row items-center w-full cursor-pointer '>
-                        {menu.title}
+                        {menu.menuName}
                         <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90 data-[state=open]:transition-transform duration-200" />
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                         <div className='mt-2 flex flex-col gap-2'>
-                            {buildMenu(menu.items, pathname, closeSideBar)}
+                            {buildMenu(menu.children, pathname, closeSideBar)}
                         </div>
                     </CollapsibleContent>
                 </Collapsible>
             );
         } else {
-            return menu.visible ? (
-                <SidebarMenu key={menu.title}>
-                    <SidebarMenuItem key={menu.title}>
+            return menu.isVisible ? (
+                <SidebarMenu key={menu.menuName}>
+                    <SidebarMenuItem key={menu.menuName}>
                         <SidebarMenuButton
                             asChild isActive={menu.url === pathname}>
                             <Link href={menu.url ?? ""} onClick={() => {
-                                useActivityLog().log("CLICK_MENU", "menu:" + menu.title, { from: "sidebar" });
+                                useActivityLog().log("CLICK_MENU", "menu:" + menu.menuName, { from: "sidebar" });
                                 closeSideBar();
                             }}>
-                                {menu.icon && <RenderIcon name={menu.icon} />}
-                                {menu.title}
+                                {menu.icon && <RenderIcon name={menu.icon as IconName} />}
+                                {menu.menuName}
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -77,16 +79,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { menus, setMenus } = useStoreMenu();
     React.useEffect(() => {
         if (session && (!menus)) {
-            // fetch once
             (async () => {
-                console.log("FETCHING MENU");
+                logger.debug("FETCHING MENU");
                 try {
-                    const r = await fetch("http://localhost:3000/api/menu");
-                    if (!r.ok) throw new Error("Failed to load menu");
+                    const r = await fetch("/api/menu");
+                    if (!r.ok) throw new Error("Failed to load menu" + await r.text());
                     const json = await r.json();
+                    logger.debug(json);
                     setMenus(json); // store
                 } catch (e) {
-                    console.error(e);
+                    logger.error(e);
                 }
             })();
         }
@@ -95,10 +97,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     return (
         <Sidebar {...props}>
             <SidebarHeader className='px-5'>
-                <Avatar className="h-8 w-8 rounded-lg ">
-                    <AvatarImage src={"https://github.com/shadcn.png"} alt={"logo"} />
-                    <AvatarFallback className="rounded-lg">Logo</AvatarFallback>
-                </Avatar>
+                <Link href={"/"} className="h-8 w-8 rounded-lg">
+                    <Avatar >
+                        <AvatarImage src={"https://github.com/shadcn.png"} alt={"logo"} />
+                        <AvatarFallback className="rounded-lg">Logo</AvatarFallback>
+                    </Avatar>
+                </Link>
+                <div className=" md:hidden flex flex-row items-center justify-between border-dashed border border-primary p-4 gap-4">
+                    <ThemeMode />
+                    <ThemeColor />
+                </div>
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>

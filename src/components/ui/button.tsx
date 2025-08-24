@@ -1,8 +1,9 @@
-import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 " +
@@ -10,7 +11,7 @@ const buttonVariants = cva(
   " disabled:opacity-50 [&_svg]:pointer-events-none " +
   " [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none " +
   " focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] " +
-  " aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive " +  
+  " aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive " +
   "cursor-pointer disabled:cursor-not-allow",
   {
     variants: {
@@ -23,8 +24,8 @@ const buttonVariants = cva(
           "border  shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
         secondary:
           "bg-secondary  text-secondary-foreground shadow-xs hover:bg-secondary/80",
-        ghost:
-          "hover:bg-accent  cursor-pointer hover:text-accent-foreground dark:hover:bg-accent/50 disabled:!pointer-not-allow",
+        ghost: "hover:bg-accent  cursor-pointer hover:text-accent-foreground dark:hover:bg-accent/50 disabled:!pointer-not-allow",
+        disabled:"pointer-events-none cursor-not-allowed",
         link: "text-primary underline-offset-4 hover:underline cursor-pointer",
       },
       size: {
@@ -46,10 +47,14 @@ function Button({
   variant,
   size,
   asChild = false,
+  progress = false,
+  children,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
+  } & {
+    progress?: boolean;
   }) {
   const Comp = asChild ? Slot : "button";
 
@@ -58,7 +63,12 @@ function Button({
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
-    />
+    >
+      <div className="flex flex-row gap-2 items-center">
+        {children}
+        {progress && <Loader2 className={`h-5 w-5 animate-spin`} />}
+      </div>
+    </Comp>
   );
 }
 

@@ -4,7 +4,7 @@ import { create } from 'zustand';
 
 interface UserState {
   user: Session | null;
-  setUser: (user: any | null) => void;
+  setUser: (user: Session | null) => void;
   clearUser: () => void;
 }
 

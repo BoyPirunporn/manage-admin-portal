@@ -1,8 +1,10 @@
 import { Toaster } from "@/components/ui/sonner";
+import { authOptions } from "@/lib/auth/auth";
 import DialogProvider from "@/providers/DialogProvider";
 import DrawerProvider from "@/providers/DrawerProvider";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import type { Metadata } from "next";
+import { getServerSession } from "next-auth";
 import AuthProvider from "../providers/AuthProvider";
 import QueryClientProvider from "../providers/QueryProvider";
 import ThemeProvider from "../providers/ThemeProvider";
@@ -17,19 +19,21 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: Readonly<{
-  children:React.ReactNode
+  children: React.ReactNode;
 }>) {
-  
+  const session = await getServerSession(authOptions);
   return (
     <html lang="en">
       <body>
         <ThemeProvider>
-          <AuthProvider session={null}>
+          <AuthProvider session={session}>
             <QueryClientProvider>
-              <main className="min-h-screen">{children}</main>
-              <DialogProvider />
-              <DrawerProvider />
-              <Toaster />
+              <div className="relative">
+                <main className="min-h-screen">{children}</main>
+                <DialogProvider />
+                <DrawerProvider />
+                <Toaster />
+              </div>
             </QueryClientProvider>
           </AuthProvider>
         </ThemeProvider>

@@ -5,7 +5,7 @@ export const POST = async (req: NextRequest) => {
     const body = await req.json();
     try {
         const response = await apiRequest({
-            url: "/api/v1/user-management",
+            url: "/api/v1/users",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -21,7 +21,7 @@ export const PUT = async (req: NextRequest) => {
     const body = await req.json();
     try {
         const response = await apiRequest({
-            url: "/api/v1/user-management",
+            url: "/api/v1/users",
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"

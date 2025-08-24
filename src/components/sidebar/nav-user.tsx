@@ -30,16 +30,16 @@ import {
 import { useActivityLog } from "@/hooks/use-activity-log";
 import { useStoreMenu } from "@/stores/store-menu";
 import { useStoreUser } from "@/stores/store-user";
-import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { signOut } from "next-auth/react";
+import { handleClearSession } from "@/lib/auth/auth";
 
 export function NavUser() {
     const { isMobile } = useSidebar();
     const { user: session } = useStoreUser();
     const router = useRouter();
-   
+
     return (
         <SidebarMenu>
             <SidebarMenuItem>
@@ -95,12 +95,11 @@ export function NavUser() {
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={async () => {
                             await useActivityLog().log("SIGNOUT", "USER:SIGNOUT", { form: "menu-user" });
-                            await signOut({
-                                redirect: false,
-                            });
-                             useStoreMenu.getState().clear();
-                             useStoreUser.getState().clearUser()
-                             router.push("/auth")
+                            await handleClearSession();
+                            await signOut({ redirect: false });
+                            useStoreMenu.getState().clear();
+                            useStoreUser.getState().clearUser();
+                            router.push("/auth");
                         }}>
                             <LogOut />
                             Log out

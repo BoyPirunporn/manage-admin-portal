@@ -1,19 +1,28 @@
-import { MenuModelWithRoleMenuPermission, PermissionModel } from "@/model";
+import { MenuModel } from "@/model";
 import React from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
 
+export const PERMISSIONS = ["VIEW", "CREATE", "UPDATE", "DELETE"] as const;
+export type PermissionKey = (typeof PERMISSIONS)[number];
+
+export const KEY_MAP: Record<string, PermissionKey> = {
+  canView: "VIEW",
+  canCreate: "CREATE",
+  canUpdate: "UPDATE",
+  canDelete: "DELETE",
+};
 const AccordionLevel = ({
   items,
-  permissions,
   checkedPermissions,
   handleCheck,
+  disabled
 }: {
-  items: MenuModelWithRoleMenuPermission[];
-  permissions: PermissionModel[];
+  items: MenuModel[];
   checkedPermissions: Record<string, boolean>;
-  handleCheck: (menu: MenuModelWithRoleMenuPermission, permission: PermissionModel, checked: boolean) => void;
+  handleCheck: (menu: MenuModel, permission: PermissionKey, checked: boolean) => void;
+  disabled: boolean;
 }) => {
   const [accordionValue, setAccordionValue] = React.useState<string | undefined>(undefined);
   return (
@@ -28,34 +37,38 @@ const AccordionLevel = ({
         <AccordionItem key={item.id} value={item.title}>
           <AccordionTrigger className="cursor-pointer border px-2">{item.title}</AccordionTrigger>
           <AccordionContent className="rounded-md px-3 py-2">
-            {item.items?.length ? (
+            {item.children?.length ? (
               <AccordionLevel
-                items={item.items}
-                permissions={permissions}
+                disabled={disabled}
+                items={item.children}
                 checkedPermissions={checkedPermissions}
                 handleCheck={handleCheck}
               />
             ) : (
               <div className="flex flex-row gap-4 flex-wrap">
-                {permissions
-                  .slice()
-                  .sort((a, b) => a.name.localeCompare(b.name))
-                  .map((permission) => {
-                    const key = `${item.id}_${permission.name}`;
-                    const isChecked = checkedPermissions[key] ?? false;
-                    return (
-                      <div key={permission.id} className="flex items-center gap-2">
-                        <Checkbox
-                          checked={isChecked}
-                          id={permission.id?.toString()}
-                          onCheckedChange={(checked) =>
-                            handleCheck(item, permission, Boolean(checked))
-                          }
-                        />
-                        <Label className='cursor-pointer ' htmlFor={permission.id?.toString()}>{permission.name}</Label>
-                      </div>
-                    );
-                  })}
+                {PERMISSIONS.map((permission) => {
+                  const key = `${item.id}_${permission}`;
+                  const isChecked = checkedPermissions[key] ?? false;
+                  return (
+                    <div key={permission} className="flex items-center gap-2">
+                      <Checkbox
+                        disabled={disabled}
+                        checked={isChecked}
+                        id={`${item.id}_${permission}`} // ให้ id ไม่ซ้ำ
+                        onCheckedChange={(checked) => {
+                          handleCheck(item, permission, Boolean(checked));
+                        }
+                        }
+                      />
+                      <Label
+                        className="cursor-pointer"
+                        htmlFor={`${item.id}_${permission}`}
+                      >
+                        {permission}
+                      </Label>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </AccordionContent>
@@ -63,6 +76,6 @@ const AccordionLevel = ({
       ))}
     </Accordion>
   );
-}
+};
 
 export default AccordionLevel;

@@ -51,9 +51,9 @@ const mapThemeToClass:Record<ColorTheme, { primary: string; secondary: string; a
 const ThemeColor = () => {
     const { color, setColor } = useThemeStore();
     return (
-        <div className='ml-auto' >
+        <div className='' >
             <Select defaultValue={color} onValueChange={setColor}>
-                <SelectTrigger className="min-w-32 cursor-pointer" defaultValue={color}>
+                <SelectTrigger className="md:min-w-32 cursor-pointer" defaultValue={color}>
                     <SelectValue defaultValue={color} />
                 </SelectTrigger>
                 <SelectContent defaultValue={color}>

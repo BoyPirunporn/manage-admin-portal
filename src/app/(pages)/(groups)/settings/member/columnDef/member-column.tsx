@@ -1,0 +1,61 @@
+import ColumnAction from "@/components/datatable/column-action";
+import { PATH } from "@/lib/path";
+import { CustomColumnDef, UserModel } from "@/model";
+import ImageProvider from "@/providers/ImageProvider";
+import { usePermissions } from "@/providers/PermissionProvider";
+import { useRouter } from "next/navigation";
+export const memberColumn: CustomColumnDef<UserModel>[] = [
+    {
+        accessorKey: "imageUrl",
+        header: "Image",
+        cell: ({ getValue }) => {
+            return (
+                <div className="relative w-20 h-20">
+                    <ImageProvider key={getValue() as string} src={getValue() as string} className="rounded-md" />
+                </div>
+            );
+        }
+    },
+    {
+        accessorKey: "email",
+        header: "Email"
+    },
+    {
+        accessorKey: "firstName",
+        header: "First Name"
+    },
+    {
+        accessorKey: "lastName",
+        header: "Last Name"
+    },
+    {
+        accessorKey: "action",
+
+        header: "Action",
+        alignItem: "center",
+        cell: ({ row }) => {
+            const {can} = usePermissions();
+            const router = useRouter();
+            const canView = can("view", PATH.SETTINGS.MEMBER.VIEW(row.original.id!));
+            const canEdit = can("update", PATH.SETTINGS.MEMBER.UPDATE(row.original.id!));
+            return (
+                <ColumnAction
+                    target="MEMBER"
+                    metadata={{
+                        form: "settings/member",
+                        payload: {
+                            userId: row.original.id?.toString()
+                        }
+                    }}
+                    canEdit={canEdit}
+                    canView={canView}
+                    handleEdit={() => {
+                        router.push(PATH.SETTINGS.MEMBER.UPDATE(row.original.id!));
+                    }}
+                    handleView={() => {
+                        router.push(PATH.SETTINGS.MEMBER.VIEW(row.original.id!));
+                    }} />
+            );
+        }
+    },
+];

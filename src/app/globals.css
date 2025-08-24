@@ -21,6 +21,7 @@
   @import "./styles/sign-up.css";
   @import "./styles/auth.css";
   @import "./styles/animation.css";
+  @import "./styles/loader-jump.css";
 
   @custom-variant dark (&:is(.dark *));
 

@@ -1,7 +1,7 @@
-import { logger } from "@/lib/utils";
+import logger from "@/lib/logger";
 import { ResponseApi } from "@/model";
 import { NextRequest, NextResponse } from "next/server";
-import { apiRequest, report, responseError } from "../../_utils/api-request";
+import { apiRequest, responseError } from "../../_utils/api-request";
 
 export const POST = async (req: NextRequest) => {
     const body = await req.json();

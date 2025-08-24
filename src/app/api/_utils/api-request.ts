@@ -1,7 +1,7 @@
 // app/api/_utils/api-request.ts
-import { authOptions } from "@/lib/auth";
-import { logger } from "@/lib/utils";
-import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import { authOptions } from "@/lib/auth/auth";
+import logger from "@/lib/logger";
+import axios, { AxiosError, AxiosRequestConfig, isAxiosError } from "axios";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
@@ -39,17 +39,21 @@ export async function apiRequest<T = unknown>(
         Authorization: token ? `Bearer ${token}` : "",
       },
     });
-
     return response.data;
   } catch (error) {
-    logger.error({ error });
+    report(error);
+    // logger.error({ error });
     return Promise.reject(error);
   }
 }
 
 
 export const report = (error: unknown) => {
-  logger.debug(error);
+  if (isAxiosError(error)) {
+    logger.debug("Axios Error " + error);
+  } else {
+    logger.debug("Exception Error " + error);
+  }
   return axios.isAxiosError(error) ? (error.response?.data.message ?? error.message) : (error as Error).message;
 };
 

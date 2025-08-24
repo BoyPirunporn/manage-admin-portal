@@ -1,32 +1,10 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 
-import { SessionProvider, signOut, useSession } from 'next-auth/react';
 import { Session } from 'next-auth';
+import { SessionProvider } from 'next-auth/react';
+import PermissionProvider from './PermissionProvider';
 import { useStoreUser } from '@/stores/store-user';
-import { useStoreMenu } from '@/stores/store-menu';
-import useStoreModal from '@/stores/store-model';
-import { Button } from '@/components/ui/button';
-
-const SyncUserToStore = () => {
-    const clearSession = React.useCallback(() => {
-        useStoreMenu.getState().clear();
-        useStoreUser.getState().clearUser();
-    }, []);
-    const { data: session } = useSession({
-        required: true,
-        onUnauthenticated: () => {
-            console.log("this")
-            
-        }
-    });
-    const setUser = useStoreUser((state) => state.setUser);
-    React.useEffect(() => {
-        setUser(session ?? null);
-    }, [session, setUser]);
-    
-    return null;
-};
 
 const AuthProvider = ({
     children,
@@ -35,10 +13,18 @@ const AuthProvider = ({
     session: Session | null;
     children: React.ReactNode;
 }>) => {
+    const { setUser, user } = useStoreUser();
+    useEffect(() => {
+        if (session && !user) {
+            setUser(session);
+        }
+    }, [session, setUser]);
+    const permissions = session?.permissions || [];
     return (
-        <SessionProvider >
-            <SyncUserToStore />
-            {children}
+        <SessionProvider session={session}>
+            <PermissionProvider permissions={permissions}>
+                {children}
+            </PermissionProvider>
         </SessionProvider>
     );
 };

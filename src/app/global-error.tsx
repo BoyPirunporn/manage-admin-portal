@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { AxiosError } from 'axios';
+import logger from '@/lib/logger';
 import { useEffect } from 'react';
 export class AppError extends Error {
   statusCode: number;
@@ -43,7 +43,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.log({ error });
+    logger.debug({ error });
   }, [error]);
 
   return (

@@ -1,15 +1,20 @@
+import logger from "@/lib/logger";
+import { PagedResponse } from "@/model";
 import { NextRequest, NextResponse } from "next/server";
 import { apiRequest, responseError } from "./api-request";
-import { DataTablesOutput } from "@/model";
 
 export async function handleDataTableRequest<T>(req: NextRequest, apiUrl: string) {
-    const body = await req.json();
+    const params: Record<string, string> = {};
+    for (const [key, value] of req.nextUrl.searchParams.entries()) {
+        params[key] = value;
+    }
 
+    logger.info({params})
     try {
-        const response = await apiRequest<DataTablesOutput<T>>({
+        const response = await apiRequest<PagedResponse<T>>({
             url: apiUrl,
-            method: "POST",
-            data: body,
+            method: "GET",
+            params,
             headers: {
                 "Content-Type": "application/json",
             },

@@ -1,81 +1,62 @@
-import { getToken } from "next-auth/jwt";
-import { NextResponse } from "next/server";
+// middleware.ts
+import { NextRequestWithAuth, withAuth } from "next-auth/middleware";
 import type { NextRequest } from "next/server";
-import { canAccess } from "./lib/utils";
-import { withAuth, NextRequestWithAuth } from 'next-auth/middleware';
-import { cookies } from "next/headers";
-import { MenuModelWithRoleMenuPermission } from "./model";
-// export async function middleware(req: NextRequest) {
-//   const { pathname } = req.nextUrl;
+import { NextResponse } from "next/server";
 
-//   // skip static files / API / next internals
-//   if (
-//     pathname.startsWith("/_next") ||
-//     pathname.startsWith("/api") ||
-//     pathname.startsWith("/images") ||
-//     pathname === "/favicon.ico" ||
-//     pathname.startsWith("/.well-known")
-//   ) {
-//     return NextResponse.next();
-//   }
+// ✅ helper สำหรับ redirect/rewrites
+const redirectTo = (path: string, req: NextRequest) =>
+  NextResponse.redirect(new URL(path, req.url));
 
-//   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-//   const isAuth = !!token?.accessToken;
+const rewriteTo = (path: string, req: NextRequest) =>
+  NextResponse.rewrite(new URL(path, req.url));
 
-//   // 1. User not logged in → redirect to /auth
-//   if (!isAuth) {
-//     if (!pathname.startsWith("/auth")) {
-//       return NextResponse.redirect(new URL("/auth", req.url));
-//     }
-//     return NextResponse.next();
-//   }
-
-//   // 2. Logged in user trying to access /auth → redirect home
-//   if (pathname.startsWith("/auth")) {
-//     return NextResponse.redirect(new URL("/", req.url));
-//   }
-
-//   // // 3. Logged in user → check permissions
-//   // const hasAccess = canAccess(pathname, token.roles ?? [], token.menus ?? []);
-//   // if (isAuth && !hasAccess) {
-//   //   // rewrite to /403 page (user is logged in but forbidden)
-//   //   return NextResponse.rewrite(new URL("/403", req.url));
-//   // }
-
-//   // 4. User logged in and has access → continue
-//   return NextResponse.next();
-// }
-
-
-
+// ✅ middleware หลัก
 export default withAuth(
   async function middleware(req: NextRequestWithAuth) {
-    const pathname = req.nextUrl.pathname;
-    const isAuth = req.nextauth.token?.accessToken;
-    const permissions = req.nextauth.token?.roles;
-    const menus = req.nextauth.token?.menus;
-    if (!isAuth) {
-      if (!pathname.startsWith("/auth")) {
-        return NextResponse.redirect(new URL("/auth", req.url));
+    const { pathname } = req.nextUrl;
+    const token = req.nextauth.token;
+    const isAuth = !!token?.accessToken;
+
+    // ป้องกันเข้าถึง /api/auth/session ผ่าน browser
+    if (pathname === "/api/auth/session") {
+      const userAgent = req.headers.get("user-agent") || "";
+
+      // เช็คว่าเป็น browser
+      const isBrowser = /Mozilla|Chrome|Safari|Firefox|Edge/.test(userAgent);
+
+      if (isBrowser) {
+        return NextResponse.json({ message: "Forbidden" }, { status: 403 });
       }
-      return NextResponse.next();
+    }
+    // 1. ยังไม่ได้ login → ไป /auth (ยกเว้น path /auth เอง)
+    if (!isAuth) {
+      return pathname.startsWith("/auth")
+        ? NextResponse.next()
+        : redirectTo("/auth", req);
     }
 
+    // 2. login แล้วแต่เข้าหน้า /auth → redirect ไป home
     if (pathname.startsWith("/auth")) {
-      return NextResponse.redirect(new URL("/", req.url));
+      return redirectTo("/", req);
     }
 
-    if(isAuth && !canAccess(pathname,permissions!,menus!)){
-      return NextResponse.rewrite(new URL("/403",req.url));
-    }
-  }, {
-  callbacks: {
-    authorized: (args) => {
-      return true;
-    }
+    // // 3. login แล้วแต่ไม่มีสิทธิ์ → rewrite ไปหน้า 403
+    // if (!canAccess(pathname, token.menus ?? [])) {
+    //   return rewriteTo("/403", req);
+    // }
+
+    // // 4. ผ่านทุกเงื่อนไข → ไปต่อ
+    return NextResponse.next();
+  },
+  {
+    callbacks: {
+      // ให้ always authorize, แต่ logic จริงไปเช็คใน middleware ด้านบน
+      authorized: () => true,
+    },
   }
-});
+);
 
+// ✅ matcher: ข้ามไฟล์ static / api / internals
 export const config = {
   matcher: [
     "/((?!api|_next|images|favicon.ico|\\.well-known).*)",

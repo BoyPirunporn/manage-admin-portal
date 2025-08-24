@@ -5,17 +5,17 @@ import { Separator } from '@radix-ui/react-separator';
 import React from 'react';
 import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb-component';
 import { AppSidebar } from '../../components/sidebar/app-sidebar';
-import ProtectRoute from './_protect-route/protect-route';
+import ProtectRoute from './(groups)/_protect-route/protect-route';
 
 const RootLayout = async ({
     children
-}:{
-    children:React.ReactNode
+}: {
+    children: React.ReactNode;
 }) => {
     return (
-        <SidebarProvider>
+        <SidebarProvider >
             <AppSidebar />
-            <ProtectRoute>
+            <ProtectRoute >
                 <SidebarInset>
                     <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
                         <SidebarTrigger className="-ml-1" />
@@ -24,16 +24,16 @@ const RootLayout = async ({
                             className="mr-2 data-[orientation=vertical]:h-4"
                         />
                         <BreadcrumbComponent />
-                        <div className="ml-auto">
+                        <div className="ml-auto md:block hidden">
                             <div className="flex flex-row gap-2 items-center">
                                 <ThemeMode />
                                 <ThemeColor />
                             </div>
                         </div>
                     </header>
-                    <section className='py-10 px-5 '>
+                    <div className='relative'>
                         {children}
-                    </section>
+                    </div>
                 </SidebarInset>
             </ProtectRoute>
         </SidebarProvider>

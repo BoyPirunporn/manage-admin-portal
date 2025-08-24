@@ -1,4 +1,4 @@
-import { logger } from "@/lib/utils";
+import logger from "@/lib/logger";
 import { DataTablesOutput } from "@/model";
 import axios from "axios";
 import { SearchCriteria } from "./global-datatable";
@@ -40,7 +40,7 @@ export const dataTableAction = async <T,>({
     logger.debug(payload);
 
     try {
-        const res = await axios<DataTablesOutput<T>>(`http://localhost:3000/${apiUrl}`, {
+        const res = await axios<DataTablesOutput<T>>(process.env.NEXT_PUBLIC_APP_URL+`/${apiUrl}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             data: payload,

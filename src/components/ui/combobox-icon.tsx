@@ -58,7 +58,6 @@ export function ComboBoxIcon(
                 <CommandList className="max-h-60 overflow-auto">
                     <CommandEmpty>No results found</CommandEmpty>
                     {options.map((option) => {
-                        console.log({option})
                         return (
                             <CommandItem
                                 key={option.value}

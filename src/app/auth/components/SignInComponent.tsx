@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { FormInputField } from '@/components/ui/form-input';
 import { useActivityLog } from '@/hooks/use-activity-log';
+import logger from '@/lib/logger';
 import { cn } from '@/lib/utils';
 import useStoreModal from '@/stores/store-model';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,7 +16,7 @@ const signInSchema = z.object({
 });
 
 type SignIn = z.infer<typeof signInSchema>;
-
+const delay = async (duration: number) => await new Promise(resolve => setTimeout(resolve, duration));
 const SignInComponent = ({
     active,
     handleToggle
@@ -35,6 +36,7 @@ const SignInComponent = ({
 
     const handleSubmit = async (data: SignIn) => {
         try {
+            await delay(5000);
             const response = await signIn("credentials", {
                 redirect: false,
                 ...data
@@ -54,6 +56,9 @@ const SignInComponent = ({
                 title: "Exception",
                 content: (error as Error).message
             });
+        } finally {
+            logger.debug("SUBMIT END -> " + form.formState.isSubmitting);
+
         }
     };
     return (
@@ -71,12 +76,11 @@ const SignInComponent = ({
                         <FormInputField control={form.control} name={"email"} label={'Email'} />
                         <FormInputField control={form.control} name={"password"} type='password' label={'Password'} />
                         <a href="#" className="text-sm mt-2 text-center my-2 py-2">Forget Your Password?</a>
-                        <Button>
+                        <Button progress={form.formState.isSubmitting} disabled={form.formState.isSubmitting}>
                             Sign In
                         </Button>
                     </div>
                     <p className='text-xs block md:hidden pt-3'>Don't have an account? <span onClick={handleToggle} className='cursor-pointer text-primar underline'>SignUp</span>.</p>
-
                 </form>
             </Form>
         </div>

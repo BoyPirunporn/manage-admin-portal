@@ -7,59 +7,48 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator
 } from '@/components/ui/breadcrumb';
-import { MenuModel } from '@/model';
+import { MenuPermissionNode } from '@/model';
 import { useStoreMenu } from '@/stores/store-menu';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 
-export function findBreadcrumb(
-    pathname: string,
-    menus: MenuModel[]
-): { title: string; url: string; }[] {
-    const path: { title: string; url: string; }[] = [];
-    const dfs = (nodes: MenuModel[]): boolean => {
-        nodes && nodes.forEach(node => {
-            if (node.url && pathname === node.url) {
-                path.unshift({ title: node.title, url: node.url });
-                return true;
-            }
-            // ถ้ามี children ก็วนต่อ
-            if (node.items && node.items.length > 0) {
-                const found = dfs(node.items);
-                if (found) {
-                    path.unshift({ title: node.title, url: node.url! ?? null });
-                    return true;
-                }
-            }
-        });
 
-        return false;
-    };
-
-    dfs(menus);
-    return path;
-}
 export const BreadcrumbComponent = () => {
     const { menus } = useStoreMenu();
     const pathname = usePathname();
 
-    function findMenuByUrl(menus: MenuModel[], url: string): MenuModel | null {
+    function findMenuChainByUrl(
+        menus: MenuPermissionNode[],
+        pathname: string
+    ): MenuPermissionNode[] {
+        const pathSegments = pathname.split("/").filter(Boolean);
+
         for (const menu of menus) {
-            if (menu.url === url) return menu;
-            const found = findMenuByUrl(menu.items, url);
-            if (found) return found;
+            if (menu.url === "/" && pathname === "/") {
+                return [menu];
+            }
+
+            const menuSegments = menu.url?.split("/").filter(Boolean) ?? [];
+            const isMatch = menuSegments.every((seg, i) => seg === pathSegments[i]);
+
+            if (isMatch) {
+                // ถ้าตรง และยังมี children -> ลองลงไปหา
+                if (menu.children?.length) {
+                    const childChain = findMenuChainByUrl(menu.children, pathname);
+                    if (childChain.length) {
+                        return [menu, ...childChain];
+                    }
+                }
+                return [menu];
+            }
         }
-        return null;
+
+        return [];
     }
+
     const crumbs = React.useMemo(() => {
-        const chain: MenuModel[] = [];
-        let current = findMenuByUrl(menus ?? [], pathname);
-        while (current) {
-            chain.unshift(current);
-            current = current.parent!;
-        }
-        return chain;
+        return findMenuChainByUrl(menus ?? [], pathname);
     }, [pathname, menus]);
 
     if (crumbs.length === 0) return null;
@@ -72,10 +61,10 @@ export const BreadcrumbComponent = () => {
                             <BreadcrumbItem>
                                 {index < crumbs.length - 1 && crumb.url ? (
                                     <BreadcrumbLink asChild>
-                                        <Link href={crumb.url}>{crumb.title}</Link>
+                                        <Link href={crumb.url}>{crumb.menuName}</Link>
                                     </BreadcrumbLink>
                                 ) : (
-                                    <BreadcrumbPage>{crumb.title}</BreadcrumbPage>
+                                    <BreadcrumbPage>{crumb.menuName}</BreadcrumbPage>
                                 )}
                             </BreadcrumbItem>
                             {index < crumbs.length - 1 && <BreadcrumbSeparator />}

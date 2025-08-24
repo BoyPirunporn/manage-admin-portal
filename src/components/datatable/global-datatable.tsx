@@ -1,13 +1,13 @@
 'use client';
 import { report } from '@/app/api/_utils/api-request';
-import { CustomColumnDef, DataTablesOutput } from '@/model';
+import logger from '@/lib/logger';
+import { CustomColumnDef, PagedResponse, TableState } from '@/model';
 import useStoreModal from '@/stores/store-model';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { getCoreRowModel, RowData, useReactTable } from '@tanstack/react-table';
 import axios from 'axios';
 import { useState } from 'react';
 import DataTable, { PageSize } from './data-table';
-import { logger } from '@/lib/utils';
 
 export interface SearchCriteria {
     column: string;
@@ -20,9 +20,7 @@ export interface GlobalDataTableProps<T extends RowData> {
     columns: CustomColumnDef<T>[];
     apiUrl: string;
     queryKey?: string;
-    initialPageSize?: PageSize;
-    searchCriteria?: SearchCriteria[];
-    orders?: string[];
+    tableState?: TableState;
 }
 
 
@@ -30,50 +28,38 @@ function GlobalDataTable<T extends RowData>({
     columns,
     apiUrl,
     queryKey = 'datatable',
-    initialPageSize = 10,
-    searchCriteria = [],
-    orders = []
+    tableState
 }: GlobalDataTableProps<T>) {
     const storeModal = useStoreModal();
     const [pageIndex, setPageIndex] = useState(0);
-    const [pageSize, setPageSize] = useState<PageSize>(() => initialPageSize);
-    const { data, isLoading } = useQuery<DataTablesOutput<T>, Error>({
-        queryKey: [queryKey, pageIndex, pageSize, searchCriteria],
+    const [pageSize, setPageSize] = useState<PageSize>(() => tableState?.pageSize ?? 10);
+
+    const { data, isLoading } = useQuery<PagedResponse<T>, Error>({
+        queryKey: [queryKey, pageIndex, pageSize, tableState?.globalFilter],
         queryFn: async () => {
-            const payload = {
-                draw: pageIndex + 1,
-                start: pageIndex * pageSize,
-                length: pageSize,
-                search: {
-                    value: searchCriteria.find((s) => s.searchable)?.value || "", // หรือ key ที่ใช้จริง
-                    regex: false,
-                },
-                order: orders,
-                columns: searchCriteria.map((search) => ({
-                    data: search.column,
-                    name: search.column,
-                    searchable: search.searchable,
-                    orderable: search.orderable,
-                    search: {
-                        value: search.value,
-                        regex: search.regex,
-                    },
-                })), // optional
+            const sortParams = tableState?.sorting?.map(sort =>
+                `${sort.id},${sort.desc ? 'desc' : 'asc'}`
+            ).join('');
+            const params = {
+                page: pageIndex,
+                size: pageSize,
+                sort: sortParams || 'asc', // ตั้งค่า default ถ้าไม่มีการเรียง
+                search: tableState?.globalFilter || '',
             };
             try {
-                const res = await axios<DataTablesOutput<T>>(`http://localhost:3000/${apiUrl}`, {
-                    method: "POST",
+                const { data } = await axios<PagedResponse<T>>(process.env.NEXT_PUBLIC_APP_URL +`/${apiUrl}`, {
+                    method: "GET",
                     headers: { "Content-Type": "application/json" },
-                    data: payload,
+                    params,
                 });
-                return res.data as DataTablesOutput<T>;
-            } catch (error:any) {
-                logger.debug({error})
+                return data as PagedResponse<T>;
+            } catch (error: any) {
+                logger.debug({ error });
                 storeModal.openModal({
                     title: error?.name,
                     content: report(error)
                 });
-                return null as unknown as DataTablesOutput<T>;
+                return null as unknown as PagedResponse<T>;
             }
         },
         placeholderData: keepPreviousData,
@@ -85,7 +71,7 @@ function GlobalDataTable<T extends RowData>({
         columns,
         getCoreRowModel: getCoreRowModel(),
         manualPagination: true,
-        pageCount: Math.ceil(data?.recordsFiltered! / pageSize) ?? -1
+        pageCount: Math.ceil(data?.totalPages! / pageSize) ?? -1
     });
 
     return (

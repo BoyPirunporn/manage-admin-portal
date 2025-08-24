@@ -1,12 +1,11 @@
-import React from "react";
 import {
   Pagination,
   PaginationContent,
+  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
-  PaginationPrevious,
   PaginationNext,
-  PaginationEllipsis,
+  PaginationPrevious,
 } from "@/components/ui/pagination";
 
 interface Props {
@@ -29,7 +28,11 @@ function PaginationComponent({ currentPage, totalPages, onPageChange }: Props) {
       // แสดงแบบมี ... ตามโจทย์
 
       if (currentPage <= 4) {
-        pages.push(1, 2, 3, 4, 5, "ellipsis", totalPages);
+        if(currentPage === 1){
+          pages.push(1)
+        }else{
+          pages.push(1, 2, 3, 4, 5, "ellipsis", totalPages);
+        }
       } else if (currentPage >= totalPages - 3) {
         pages.push(1, "ellipsis");
         for (let i = totalPages - 4; i <= totalPages; i++) {
@@ -44,6 +47,7 @@ function PaginationComponent({ currentPage, totalPages, onPageChange }: Props) {
   };
 
   const pages = getPageNumbers();
+  console.log({currentPage})
   return (
     <Pagination>
       <PaginationContent>

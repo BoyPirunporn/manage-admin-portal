@@ -1,12 +1,12 @@
 // stores/useMenuStore.ts
-import { MenuModel, MenuModelWithRoleMenuPermission } from "@/model";
+import { MenuModel, MenuModelWithRoleMenuPermission, MenuPermissionNode } from "@/model";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 type MenuState = {
-    menus: MenuModelWithRoleMenuPermission[] | null;
+    menus: MenuPermissionNode[] | null;
     loading: boolean;
-    setMenus: (menus: MenuModelWithRoleMenuPermission[]) => void;
+    setMenus: (menus: MenuPermissionNode[]) => void;
     clear: () => void;
 };
 

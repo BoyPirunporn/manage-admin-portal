@@ -1,7 +1,7 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
-import { cn, EachElement, logger } from '@/lib/utils';
+import { cn, EachElement } from '@/lib/utils';
 import { ResponseApiWithPayload } from '@/model';
 import { useQuery } from '@tanstack/react-query';
 import { CheckIcon, ChevronsUpDown } from 'lucide-react';
@@ -12,6 +12,7 @@ import { Checkbox } from './checkbox';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from './command';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
+import logger from '@/lib/logger';
 
 interface Option {
   label: string;
@@ -222,8 +223,6 @@ export function FormAutocomplete<T>({
     () => transformFn?.(payload) ?? [],
     [payload, transformFn]
   );
-
-  console.log({disabled})
 
   return (
     <Popover open={open && !disabled} onOpenChange={setOpen}>

@@ -5,8 +5,6 @@ import { useState } from 'react';
 import SignInComponent from './components/SignInComponent';
 import ToggleComponent from './components/ToggleComponent';
 import ToggleMobileComponent from './components/ToggleMobileComponent';
-import SignUpComponent from './components/SignUpComponent';
-import React from 'react';
 
 function useAnimationTrigger(delay = 0) {
   const [trigger, setTrigger] = useState(true);
@@ -35,7 +33,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className='flex m-auto justify-center items-center min-h-screen'>
+    <div className='flex m-auto justify-center items-center min-h-screen relative'>
       <div
         className={cn(
           "login-container shadow-custom",
