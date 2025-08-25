@@ -47,7 +47,6 @@ function PaginationComponent({ currentPage, totalPages, onPageChange }: Props) {
   };
 
   const pages = getPageNumbers();
-  console.log({currentPage})
   return (
     <Pagination>
       <PaginationContent>

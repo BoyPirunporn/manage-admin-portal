@@ -14,10 +14,10 @@ const MemberClient = () => {
   return (
     <div>
       <div className='mb-5 flex'>
-        <Heading title={'Member'} description='Member management' />
+        <Heading title={'Members'} description='Create, update, and organize member information.' />
         {can("create", PATH.SETTINGS.MEMBER.CREATE) && (
           <Button variant={"default"} className='ml-auto min-w-[100px] border' asChild>
-            <Link href={PATH.SETTINGS.MEMBER.CREATE}>Add</Link>
+            <Link href={PATH.SETTINGS.MEMBER.CREATE} className='w-full h-full text-center'>Add</Link>
           </Button>
         )}
       </div>

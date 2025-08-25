@@ -5,9 +5,14 @@ import { CustomColumnDef, PagedResponse, TableState } from '@/model';
 import useStoreModal from '@/stores/store-model';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { getCoreRowModel, RowData, useReactTable } from '@tanstack/react-table';
-import axios from 'axios';
+import axios, { AxiosError, isAxiosError } from 'axios';
 import { useState } from 'react';
 import DataTable, { PageSize } from './data-table';
+import { Button } from '../ui/button';
+import { handleClearSession } from '@/lib/auth/auth';
+import { signOut } from 'next-auth/react';
+import { useStoreMenu } from '@/stores/store-menu';
+import { useStoreUser } from '@/stores/store-user';
 
 export interface SearchCriteria {
     column: string;
@@ -47,7 +52,7 @@ function GlobalDataTable<T extends RowData>({
                 search: tableState?.globalFilter || '',
             };
             try {
-                const { data } = await axios<PagedResponse<T>>(process.env.NEXT_PUBLIC_APP_URL +`/${apiUrl}`, {
+                const { data } = await axios<PagedResponse<T>>(process.env.NEXT_PUBLIC_APP_URL + `/${apiUrl}`, {
                     method: "GET",
                     headers: { "Content-Type": "application/json" },
                     params,
@@ -55,10 +60,33 @@ function GlobalDataTable<T extends RowData>({
                 return data as PagedResponse<T>;
             } catch (error: any) {
                 logger.debug({ error });
-                storeModal.openModal({
-                    title: error?.name,
-                    content: report(error)
-                });
+                if (isAxiosError(error)) {
+                    if (error.status === 401) {
+                        await handleClearSession();
+                        await signOut({ redirect: false });
+                        useStoreMenu.getState().clear();
+                        useStoreUser.getState().clearUser();
+                        storeModal.openModal({
+                            title: error?.name,
+                            content: (
+                                <div className="flex flex-col gap-3">
+                                    <p>Session Timeout</p>
+                                    <Button className="ml-auto" onClick={() => (window.location.href = "/auth")}>
+                                        OK
+                                    </Button>
+                                </div>
+                            ),
+                            showCloseButton: false,
+                            onInteractOutside: false,
+                        });
+                    }
+                } else {
+                    storeModal.openModal({
+                        title: error?.name,
+                        content: report(error)
+                    });
+                }
+
                 return null as unknown as PagedResponse<T>;
             }
         },
@@ -80,9 +108,8 @@ function GlobalDataTable<T extends RowData>({
             isLoading={isLoading}
             pageIndex={pageIndex}
             setPageIndex={setPageIndex}
-            pageCount={table.getPageCount() ?? 0}
-            // handleNextPage={() => setPageIndex((p) => p + 1)}
-            // handlePreviousPage={() => setPageIndex((p) => Math.max(0, p - 1))}
+            pageCount={data?.totalPages ?? 0}
+            totalElement={data?.totalElements ?? 0}
             pageSize={pageSize}
             setPageSize={(size) => {
                 setPageSize(size);

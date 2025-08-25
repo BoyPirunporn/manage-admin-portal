@@ -11,6 +11,7 @@ declare module 'next-auth' {
         image: string;
         roles: string[];
         permissions: PermissionNode[];
+        verifyEmail:boolean;
     }
 
     interface Session {
@@ -20,6 +21,7 @@ declare module 'next-auth' {
         permissions: PermissionNode[];
         roles: string[];
         error?: string;
+        verifyEmail:boolean;
     }
 }
 
@@ -37,6 +39,7 @@ declare module "next-auth/jwt" {
         lastName: string;
         image: string;
         roles: string[];
+        verifyEmail:boolean;
     }
     type PermissionNode = {
         menuId?:string | null;

@@ -30,7 +30,7 @@ const findPermissionByPath = (path: string, permissions: PermissionNode[]): Perm
 const PermissionGuard = async ({ children, path, action }: PermissionGuardProps) => {
     const session = await getServerSession(authOptions);
     const permissions = session?.permissions || [];
-
+    
     const permission = findPermissionByPath(path, permissions);
     let hasPermission = false;
     if (permission) {

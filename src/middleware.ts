@@ -10,42 +10,41 @@ const redirectTo = (path: string, req: NextRequest) =>
 const rewriteTo = (path: string, req: NextRequest) =>
   NextResponse.rewrite(new URL(path, req.url));
 
+const PUBLIC_ROUTES = [
+  "/auth/verify-email", // หน้า verify email จากลิงก์
+  "/auth/register",     // ถ้ามีหน้า register
+  "/auth",              // หน้า login / auth
+];
 // ✅ middleware หลัก
 export default withAuth(
   async function middleware(req: NextRequestWithAuth) {
     const { pathname } = req.nextUrl;
     const token = req.nextauth.token;
+
+
+
+    if (PUBLIC_ROUTES.some((path) => pathname.startsWith(path))) {
+      return NextResponse.next();
+    }
+
+    // ตอนนี้เช็ค login / verify สำหรับ route อื่น ๆ
     const isAuth = !!token?.accessToken;
 
-    // ป้องกันเข้าถึง /api/auth/session ผ่าน browser
-    if (pathname === "/api/auth/session") {
-      const userAgent = req.headers.get("user-agent") || "";
-
-      // เช็คว่าเป็น browser
-      const isBrowser = /Mozilla|Chrome|Safari|Firefox|Edge/.test(userAgent);
-
-      if (isBrowser) {
-        return NextResponse.json({ message: "Forbidden" }, { status: 403 });
-      }
-    }
-    // 1. ยังไม่ได้ login → ไป /auth (ยกเว้น path /auth เอง)
+    // 1. ยังไม่ได้ login → redirect /auth
     if (!isAuth) {
-      return pathname.startsWith("/auth")
-        ? NextResponse.next()
-        : redirectTo("/auth", req);
+      return redirectTo("/auth", req);
     }
 
-    // 2. login แล้วแต่เข้าหน้า /auth → redirect ไป home
-    if (pathname.startsWith("/auth")) {
+    // 2. login แล้วแต่เข้าหน้า /auth/login → redirect /
+    if (pathname === "/auth" || pathname.startsWith("/auth/login")) {
       return redirectTo("/", req);
     }
 
-    // // 3. login แล้วแต่ไม่มีสิทธิ์ → rewrite ไปหน้า 403
-    // if (!canAccess(pathname, token.menus ?? [])) {
-    //   return rewriteTo("/403", req);
-    // }
+    // 3. login แล้วแต่ยังไม่ verify → redirect /auth/email-not-verified
+    if (token.verifyEmail === false && pathname !== "/auth/email-not-verified") {
+      return redirectTo("/auth/email-not-verified", req);
+    }
 
-    // // 4. ผ่านทุกเงื่อนไข → ไปต่อ
     return NextResponse.next();
   },
   {

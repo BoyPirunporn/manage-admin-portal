@@ -25,6 +25,7 @@ import {
 } from '../ui/select';
 import { Skeleton } from '../ui/skeleton';
 import PaginationComponent from './pagination-table';
+import logger from '@/lib/logger';
 
 interface IOptionFilter<T> {
     filterHeader: boolean;
@@ -46,6 +47,7 @@ interface IDataTable<T extends RowData> {
     setPageSize: (value: PageSize) => void;
     setPageIndex: React.Dispatch<SetStateAction<number>>;
     pageSize: PageSize;
+    totalElement:number;
 }
 
 export const pageSizeOption = [2, 5, 10, 20, 50, 100];
@@ -62,7 +64,8 @@ const DataTable = <T,>({
     isLoading,
     setPageSize,
     setPageIndex,
-    pageSize
+    pageSize,
+    totalElement
 }: IDataTable<T>) => {
     return (
         <div className="w-full">
@@ -78,10 +81,10 @@ const DataTable = <T,>({
                                             of={headerGroup.headers}
                                             render={(header) => {
                                                 const align = (header.column.columnDef as CustomColumnDef<T>).alignItem ?? 'left';
-
+                                                const size = (header.column.columnDef as CustomColumnDef<T>).size ?? 100;
                                                 return (
                                                     <TableHead key={header.id} style={{
-                                                        width: `${header.getSize()}px`,
+                                                        width: `${header.column.getSize()}px`,
                                                         maxWidth: `${header.getSize()}px`,
                                                         minWidth: `${header.getSize()}px`,
                                                     }} >
@@ -177,14 +180,14 @@ const DataTable = <T,>({
             </div>
             <div className="flex items-center justify-end space-x-2 py-4">
                 <div className="flex-1 text-sm text-muted-foreground">
-                    Page {!table.getRowModel().rows?.length ? 0 : pageIndex + 1} of {pageCount || 0}
+                    Page {!table.getRowModel().rows?.length ? 0 : pageIndex + 1} of {pageCount || 0} from {totalElement}
                 </div>
                 <Select
                     defaultValue={pageSize.toString()}
                     onValueChange={(value: any) => setPageSize(Number(value) as PageSize)}
                 >
                     <SelectTrigger disabled={!table.getRowModel().rows?.length} className="max-w-[100px] cursor-pointer">
-                        <SelectValue placeholder="Select a Payment Method" />
+                        <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectGroup>

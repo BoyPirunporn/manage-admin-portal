@@ -23,7 +23,7 @@ export const BreadcrumbComponent = () => {
         pathname: string
     ): MenuPermissionNode[] {
         const pathSegments = pathname.split("/").filter(Boolean);
-
+        const lastPathIndex = pathSegments[pathSegments.length - 1];
         for (const menu of menus) {
             if (menu.url === "/" && pathname === "/") {
                 return [menu];
@@ -37,10 +37,20 @@ export const BreadcrumbComponent = () => {
                 if (menu.children?.length) {
                     const childChain = findMenuChainByUrl(menu.children, pathname);
                     if (childChain.length) {
-                        return [menu, ...childChain];
+                        return [{ ...menu, url: menu.isGroup ? null as unknown as string : menu.url }, ...childChain];
                     }
                 }
-                return [menu];
+                console.log(menu);
+                return lastPathIndex.toLowerCase() !== menu.menuName.toLowerCase()
+                    ? [
+                        menu,
+                        {
+                            ...menu,
+                            menuName: lastPathIndex.substring(0, 1).toUpperCase() + lastPathIndex.substring(1).toLowerCase(),
+                            url: null as unknown as string
+                        }
+                    ]
+                    : [menu];
             }
         }
 
@@ -57,7 +67,7 @@ export const BreadcrumbComponent = () => {
             <BreadcrumbList>
                 {crumbs.map((crumb, index) => {
                     return (
-                        <div className="flex items-center" key={crumb.url}>
+                        <div className="flex items-center space-x-2" key={crumb.url+crumb.menuName+crumb.menuId}>
                             <BreadcrumbItem>
                                 {index < crumbs.length - 1 && crumb.url ? (
                                     <BreadcrumbLink asChild>

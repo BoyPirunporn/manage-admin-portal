@@ -1,6 +1,7 @@
 // app/api/_utils/api-request.ts
 import { authOptions } from "@/lib/auth/auth";
 import logger from "@/lib/logger";
+import { ResponseApi } from "@/model";
 import axios, { AxiosError, AxiosRequestConfig, isAxiosError } from "axios";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
@@ -25,6 +26,7 @@ export async function apiRequest<T = unknown>(
   const controller = new AbortController();
   const session = await getServerSession(authOptions);
   const token = session?.accessToken;
+  logger.debug({ token });
   if (config.signal) {
     // ถ้า config.signal ถูก abort ให้ cancel axios ด้วย
     config.signal.addEventListener?.("abort", () => {
@@ -59,9 +61,10 @@ export const report = (error: unknown) => {
 
 export const responseError = (error: unknown) => {
   if (axios.isAxiosError(error)) {
-    return NextResponse.json({
+    return NextResponse.json<ResponseApi>({
       message: (error.response?.data.message ?? error.message),
-      status: error.response?.status ?? error.status
+      status: error.response?.status! ?? error.status,
+      success: false
     }, {
       status: error.response?.status ?? error.status
     });

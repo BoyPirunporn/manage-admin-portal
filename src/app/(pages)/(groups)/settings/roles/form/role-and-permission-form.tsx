@@ -5,7 +5,9 @@ import AccordionLevel, { KEY_MAP, PermissionKey } from "@/components/accordion-l
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { FormInputField } from "@/components/ui/form-input";
+import { useActivityLog } from "@/hooks/use-activity-log";
 import logger from "@/lib/logger";
+import { PATH } from "@/lib/path";
 import { MenuModel, RoleModelWithPermission } from "@/model";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
@@ -111,6 +113,11 @@ const RoleAndPermissionForm = ({
                 data: schema,
             });
 
+            if (data) {
+                useActivityLog().log("EDIT", PATH.SETTINGS.ROLE.VIEW(data.id!), { from: "ACTION IN FORM", data: schema });
+            } else {
+                useActivityLog().log("CREATE", PATH.SETTINGS.ROLE.CREATE, { from: "ACTION IN FORM", data: schema });
+            }
             toast.success(`Role has been ${data ? "updated" : "created"}!`, {
                 duration: 2000,
                 description: "Redirecting to Role list...",
@@ -150,12 +157,14 @@ const RoleAndPermissionForm = ({
                 onSubmit={form.handleSubmit(handleSubmit)}
                 className="mt-5 flex flex-col gap-5"
             >
-                <FormInputField control={form.control} name="name" label="Role name" />
-                <FormInputField
-                    control={form.control}
-                    name="description"
-                    label="Role description"
-                />
+                <div className="md:!max-w-lg flex flex-col gap-2">
+                    <FormInputField control={form.control} name="name" label="Role name" />
+                    <FormInputField
+                        control={form.control}
+                        name="description"
+                        label="Role description"
+                    />
+                </div>
 
                 {/* Menus */}
                 <div className="mb-5 flex flex-col gap-5 md:col-span-2">

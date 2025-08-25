@@ -4,16 +4,17 @@ import { Button } from '@/components/ui/button';
 import { PATH } from '@/lib/path';
 import { usePermissions } from '@/providers/PermissionProvider';
 import Link from 'next/link';
-import { roleColumnDef } from '../role-column-def';
+import { roleColumnDef } from '../columnDef/role-column';
+import Heading from '@/components/heading';
 
 const ListPage = () => {
     const { can } = usePermissions();
     return (
         <div>
             <div className='mb-5 flex'>
-                <h1 className='text-xl font-bold'>Menu</h1>
+                <Heading title='Roles' description='Define roles and assign permissions to control access.'/>
                 {can('create', PATH.SETTINGS.ROLE.CREATE) && <Button className='ml-auto min-w-[100px]' asChild >
-                    <Link href={"/settings/roles/create"}>Add</Link>
+                    <Link href={PATH.SETTINGS.ROLE.CREATE} className='w-full h-full text-center'>Add</Link>
                 </Button>}
             </div>
 

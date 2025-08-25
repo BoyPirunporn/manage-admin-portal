@@ -82,7 +82,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             (async () => {
                 logger.debug("FETCHING MENU");
                 try {
-                    const r = await fetch("/api/menu");
+                    const r = await fetch("/api/menu/me");
                     if (!r.ok) throw new Error("Failed to load menu" + await r.text());
                     const json = await r.json();
                     logger.debug(json);

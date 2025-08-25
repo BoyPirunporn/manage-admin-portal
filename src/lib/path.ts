@@ -2,10 +2,10 @@ export const PATH = {
     DASHBOARD: "/dashboard",
     SETTINGS: {
         MEMBER: {
-            LIST: "/settings/member",
-            CREATE: "/settings/member/create",
-            VIEW: (id: string) => `/settings/member/${id}/view`,
-            UPDATE: (id: string) => `/settings/member/${id}/update`
+            LIST: "/settings/members",
+            CREATE: "/settings/members/create",
+            VIEW: (id: string) => `/settings/members/${id}/view`,
+            UPDATE: (id: string) => `/settings/members/${id}/update`
         },
         ROLE:{
             LIST: "/settings/roles",

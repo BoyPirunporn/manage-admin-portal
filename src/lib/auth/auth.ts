@@ -14,9 +14,9 @@ export async function refreshAccessToken(token: JWT) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refreshToken: token.refreshToken }),
     });
-    logger.debug("RESPONSE OKK " , res.ok)
+    logger.debug("RESPONSE OKK ", res.ok);
     if (!res.ok) {
-      logger.error("RESPONSE ERROR ",await res.text())
+      logger.error("RESPONSE ERROR ", await res.text());
       return { ...token, error: "RefreshAccessTokenError" };
     }
 
@@ -52,7 +52,7 @@ export const authOptions: NextAuthOptions = {
             headers: { "Content-Type": "application/json" },
             data: credentials,
           });
-        
+
           const user = res as ResponseApiWithPayload<{
             token: string;
             refreshToken: string;
@@ -71,6 +71,7 @@ export const authOptions: NextAuthOptions = {
             lastName: user.payload.lastName,
             image: user.payload.image,
             roles: user.payload.roles,
+            verifyEmail: false,
             accessTokenExpires: JSON.parse(atob(user.payload.token.split(".").at(1)!)).exp * 1000, //ที่ *1000 เพราะ ได้ค่าเป็น second เลยต่อง * 1000
             permissions: user.payload.permissions
           } as User;
@@ -84,6 +85,7 @@ export const authOptions: NextAuthOptions = {
   ],
   pages: {
     signIn: "/auth",
+
   },
   session: { strategy: "jwt" },
   cookies: {
@@ -115,6 +117,7 @@ export const authOptions: NextAuthOptions = {
         token.lastName = user.lastName;
         token.image = user.image;
         token.roles = user.roles;
+        token.verifyEmail = user.verifyEmail;
         return token;
       }
 
@@ -152,6 +155,7 @@ export const authOptions: NextAuthOptions = {
       session.refreshToken = token.refreshToken!;
       session.roles = token.roles;
       session.permissions = token.permissions;
+      session.verifyEmail = token.verifyEmail;
       session = {
         ...session,
         user: { ...session.user!, firstName: token.firstName, lastName: token.lastName, image: token.image, roles: token.roles }

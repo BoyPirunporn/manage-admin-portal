@@ -1,4 +1,5 @@
 import ColumnAction from "@/components/datatable/column-action";
+import { useActivityLog } from "@/hooks/use-activity-log";
 import { PATH } from "@/lib/path";
 import { CustomColumnDef, UserModel } from "@/model";
 import ImageProvider from "@/providers/ImageProvider";
@@ -29,12 +30,20 @@ export const memberColumn: CustomColumnDef<UserModel>[] = [
         header: "Last Name"
     },
     {
+        accessorKey: "createdAt",
+        header: "Created At"
+    },
+    {
+        accessorKey: "updatedAt",
+        header: "Updated At"
+    },
+    {
         accessorKey: "action",
 
         header: "Action",
         alignItem: "center",
-        cell: ({ row }) => {
-            const {can} = usePermissions();
+        cell: ({ getValue, row }) => {
+            const { can } = usePermissions();
             const router = useRouter();
             const canView = can("view", PATH.SETTINGS.MEMBER.VIEW(row.original.id!));
             const canEdit = can("update", PATH.SETTINGS.MEMBER.UPDATE(row.original.id!));
@@ -53,6 +62,7 @@ export const memberColumn: CustomColumnDef<UserModel>[] = [
                         router.push(PATH.SETTINGS.MEMBER.UPDATE(row.original.id!));
                     }}
                     handleView={() => {
+                        useActivityLog().log("VIEW", PATH.SETTINGS.MEMBER.VIEW(row.original.id!), { from: "ACTION DATA TABLE", id: row.original.id });
                         router.push(PATH.SETTINGS.MEMBER.VIEW(row.original.id!));
                     }} />
             );

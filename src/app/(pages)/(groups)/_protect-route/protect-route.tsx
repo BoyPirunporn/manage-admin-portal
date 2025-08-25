@@ -3,7 +3,6 @@
 import { report } from "@/app/api/_utils/api-request";
 import { Button } from "@/components/ui/button";
 import { useActivityLog } from "@/hooks/use-activity-log";
-import { handleClearSession } from "@/lib/auth/auth";
 import { useStoreMenu } from "@/stores/store-menu";
 import useStoreModal from "@/stores/store-model";
 import { useStoreUser } from "@/stores/store-user";
@@ -36,7 +35,7 @@ const ProtectRoute = ({ children }: { children: React.ReactElement; }) => {
                 onInteractOutside: false,
                 content: (
                     <div className="flex flex-col gap-3">
-                        <p>{session?.error}</p>
+                        <p>Session Timeout!</p>
                         <Button className="ml-auto" onClick={() => (window.location.href = "/auth")}>
                             OK
                         </Button>

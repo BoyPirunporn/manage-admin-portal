@@ -118,6 +118,7 @@ type Align = "left" | "center" | "right";
 
 export type CustomColumnDef<TData extends RowData, TValue = unknown> = ColumnDef<TData, TValue> & {
     alignItem?: Align;
+    size?:number;
 };
 
 

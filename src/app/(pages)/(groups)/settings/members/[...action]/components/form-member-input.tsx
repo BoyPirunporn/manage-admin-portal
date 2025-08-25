@@ -22,6 +22,8 @@ import Heading from '@/components/heading';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { useActivityLog } from '@/hooks/use-activity-log';
+import { PATH } from '@/lib/path';
 
 
 const roleSchema: z.ZodType<Omit<RoleModel, "description">> = z.object({
@@ -43,7 +45,7 @@ const menuItemSchema = z.object({
 
 });
 const memberSchema = z.object({
-  id: z.number().nullable(),
+  id: z.string().nullable(),
   email: z.string().min(1),
   firstName: z.string().min(1),
   lastName: z.string().min(1),
@@ -88,17 +90,23 @@ const FormMemberInput = ({
   const handleSubmit = async (values: MemberSchema) => {
     try {
       await axios({
-        url: process.env.NEXT_PUBLIC_APP_URL +"/api/user-management",
+        url: process.env.NEXT_PUBLIC_APP_URL + "/api/user-management",
         method: data ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
         },
         data: JSON.stringify(values)
       });
+      if (data) {
+        useActivityLog().log("EDIT", PATH.SETTINGS.MEMBER.VIEW(data.id!), { from: "ACTION IN FORM", data: values });
+      } else {
+        useActivityLog().log("CREATE", PATH.SETTINGS.MEMBER.CREATE, { from: "ACTION IN FORM", data: values });
+      }
       toast.success(`Member ${data ? "updated" : "created"} successfully!`, {
         duration: 2 * 1000,
         description: "Redirecting to member list...",
       });
+
       setTimeout(() => {
         form.reset();
         router.back();
@@ -122,7 +130,7 @@ const FormMemberInput = ({
         password: data?.password ?? "",
         roleId: data?.roleId ?? null,
       });
-     
+
     }
   }, [data, form]);
 

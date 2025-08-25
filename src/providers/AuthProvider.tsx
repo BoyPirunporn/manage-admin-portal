@@ -1,10 +1,10 @@
 'use client';
 import React, { useEffect } from 'react';
 
+import { useStoreUser } from '@/stores/store-user';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import PermissionProvider from './PermissionProvider';
-import { useStoreUser } from '@/stores/store-user';
 
 const AuthProvider = ({
     children,
@@ -20,6 +20,8 @@ const AuthProvider = ({
         }
     }, [session, setUser]);
     const permissions = session?.permissions || [];
+
+    
     return (
         <SessionProvider session={session}>
             <PermissionProvider permissions={permissions}>
