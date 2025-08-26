@@ -28,17 +28,19 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar";
 import { useActivityLog } from "@/hooks/use-activity-log";
+import { handleClearSession } from "@/lib/auth/auth";
 import { useStoreMenu } from "@/stores/store-menu";
 import { useStoreUser } from "@/stores/store-user";
+import { signOut } from "next-auth/react";
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
-import { handleClearSession } from "@/lib/auth/auth";
 
 export function NavUser() {
     const { isMobile } = useSidebar();
     const { user: session } = useStoreUser();
     const router = useRouter();
+    const locale = useLocale();
 
     return (
         <SidebarMenu>
@@ -99,7 +101,7 @@ export function NavUser() {
                             await signOut({ redirect: false });
                             useStoreMenu.getState().clear();
                             useStoreUser.getState().clearUser();
-                            router.push("/auth");
+                            router.replace(`/${locale}/auth`);
                         }}>
                             <LogOut />
                             Log out

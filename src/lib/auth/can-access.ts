@@ -10,7 +10,7 @@ export const canAccess = (
         return true;
     }
 
-    const pathSegments = path.split("/").filter(Boolean);
+    const pathSegments = RouteBuilder().Builder().split("/").filter(Boolean);
     // sort menu longest first, root "/" last
     const sortedMenus = menus.sort((a, b) => (b.url?.length ?? 0) - (a.url?.length ?? 0));
     const menu = sortedMenus.find((m) => {

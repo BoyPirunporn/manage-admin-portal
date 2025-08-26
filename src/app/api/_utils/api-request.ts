@@ -1,8 +1,9 @@
 // app/api/_utils/api-request.ts
 import { authOptions } from "@/lib/auth/auth";
 import logger from "@/lib/logger";
+import report from "@/lib/report";
 import { ResponseApi } from "@/model";
-import axios, { AxiosError, AxiosRequestConfig, isAxiosError } from "axios";
+import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
@@ -50,28 +51,22 @@ export async function apiRequest<T = unknown>(
 }
 
 
-export const report = (error: unknown) => {
-  if (isAxiosError(error)) {
-    logger.debug("Axios Error " + error);
-  } else {
-    logger.debug("Exception Error " + error);
-  }
-  return axios.isAxiosError(error) ? (error.response?.data.message ?? error.message) : (error as Error).message;
-};
+
 
 export const responseError = (error: unknown) => {
   if (axios.isAxiosError(error)) {
     return NextResponse.json<ResponseApi>({
       message: (error.response?.data.message ?? error.message),
       status: error.response?.status! ?? error.status,
-      success: false
+      timestamp: error.response?.data.timestamp
     }, {
       status: error.response?.status ?? error.status
     });
   }
-  return NextResponse.json({
+  return NextResponse.json<ResponseApi>({
     message: (error as Error).message,
-    status: 500
+    status: 500,
+    timestamp: new Date()
   }, {
     status: 500,
   });

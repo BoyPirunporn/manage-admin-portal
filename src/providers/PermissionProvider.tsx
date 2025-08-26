@@ -1,4 +1,5 @@
 "use client";
+import { EnabledLocale, locales } from '@/i18n/routing';
 import { PermissionNode } from 'next-auth/jwt';
 import React, { createContext, useContext, useMemo } from "react";
 
@@ -18,9 +19,9 @@ interface PermissionProviderProps {
 }
 const PermissionProvider = ({ children, permissions }: PermissionProviderProps) => {
     const findPermissionByPath = useMemo(() => (path: string): PermissionNode | null => {
-        const findRecursive = (nodes: PermissionNode[]): PermissionNode | null => {
+        const findRecursive = (): PermissionNode | null => {
             
-            const pathSegments = path.split("/").filter(Boolean);
+            const pathSegments = path.split("/").filter(Boolean).filter(e => !locales.includes(e as EnabledLocale));
             // sort menu longest first, root "/" last
             const sortedMenus = permissions.sort((a, b) => (b.url?.length ?? 0) - (a.url?.length ?? 0));
             const menu = sortedMenus.find((m) => {
@@ -32,7 +33,7 @@ const PermissionProvider = ({ children, permissions }: PermissionProviderProps) 
 
             return menu;
         };
-        return findRecursive(permissions);
+        return findRecursive();
     }, [permissions]);
 
     const can = useMemo(() => (action: PermissionAction, path: string): boolean => {

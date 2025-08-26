@@ -4,7 +4,6 @@ import React, { useEffect } from 'react';
 import { useStoreUser } from '@/stores/store-user';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
-import PermissionProvider from './PermissionProvider';
 
 const AuthProvider = ({
     children,
@@ -19,14 +18,9 @@ const AuthProvider = ({
             setUser(session);
         }
     }, [session, setUser]);
-    const permissions = session?.permissions || [];
-
-    
     return (
         <SessionProvider session={session}>
-            <PermissionProvider permissions={permissions}>
-                {children}
-            </PermissionProvider>
+            {children}
         </SessionProvider>
     );
 };

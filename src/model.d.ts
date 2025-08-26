@@ -3,6 +3,11 @@ import * as Icons from "lucide-react";
 import { PermissionNode } from "next-auth/jwt";
 import { PageSize } from "./components/datatable/data-table";
 
+interface GlobalPropsWithParams {
+    params: Promise<{
+        locale: string;
+    }>;
+}
 interface DataTablesOutput<T> {
     draw: number,
     recordsTotal: number,
@@ -44,11 +49,11 @@ interface PermissionNodeWithOutTitleAndUrl extends Omit<PermissionNode, "title" 
 }
 interface RoleModelWithPermission extends RoleModel {
     permissions: {
-        menuId:string;
-        canView:boolean;
-        canCreate:boolean;
-        canUpdate:boolean;
-        canDelete:boolean;
+        menuId: string;
+        canView: boolean;
+        canCreate: boolean;
+        canUpdate: boolean;
+        canDelete: boolean;
     }[];
 }
 
@@ -81,7 +86,7 @@ interface PermissionModel {
 
 interface BaseResponse {
     status: number;
-    success: boolean;
+    timestamp: Date;
 }
 interface ResponseApi extends BaseResponse {
     message: string;
@@ -118,7 +123,7 @@ type Align = "left" | "center" | "right";
 
 export type CustomColumnDef<TData extends RowData, TValue = unknown> = ColumnDef<TData, TValue> & {
     alignItem?: Align;
-    size?:number;
+    size?: number;
 };
 
 

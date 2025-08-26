@@ -1,18 +1,19 @@
 'use client';
-import { report } from '@/app/api/_utils/api-request';
+import { handleClearSession } from '@/lib/auth/auth';
 import logger from '@/lib/logger';
+import report from '@/lib/report';
 import { CustomColumnDef, PagedResponse, TableState } from '@/model';
+import { useStoreMenu } from '@/stores/store-menu';
 import useStoreModal from '@/stores/store-model';
+import { useStoreUser } from '@/stores/store-user';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { getCoreRowModel, RowData, useReactTable } from '@tanstack/react-table';
-import axios, { AxiosError, isAxiosError } from 'axios';
-import { useState } from 'react';
-import DataTable, { PageSize } from './data-table';
-import { Button } from '../ui/button';
-import { handleClearSession } from '@/lib/auth/auth';
+import axios, { isAxiosError } from 'axios';
 import { signOut } from 'next-auth/react';
-import { useStoreMenu } from '@/stores/store-menu';
-import { useStoreUser } from '@/stores/store-user';
+import { useLocale } from 'next-intl';
+import { useState } from 'react';
+import { Button } from '../ui/button';
+import DataTable, { PageSize } from './data-table';
 
 export interface SearchCriteria {
     column: string;
@@ -71,7 +72,7 @@ function GlobalDataTable<T extends RowData>({
                             content: (
                                 <div className="flex flex-col gap-3">
                                     <p>Session Timeout</p>
-                                    <Button className="ml-auto" onClick={() => (window.location.href = "/auth")}>
+                                    <Button className="ml-auto" onClick={() => (window.location.href = `/${useLocale()}/auth`)}>
                                         OK
                                     </Button>
                                 </div>

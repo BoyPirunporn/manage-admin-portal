@@ -22,6 +22,7 @@ import { useStoreMenu } from '@/stores/store-menu';
 import { useStoreUser } from '@/stores/store-user';
 import { Avatar } from '@radix-ui/react-avatar';
 import { ChevronRight } from 'lucide-react';
+import { useLocale } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
@@ -32,7 +33,7 @@ import ThemeMode from '../ui/theme-mode';
 import { NavUser } from './nav-user';
 
 
-const buildMenu = (menus: MenuPermissionNode[], pathname: string, closeSideBar: () => void) => {
+const buildMenu = (menus: MenuPermissionNode[], pathname: string,locale:string, closeSideBar: () => void) => {
     return menus.map(menu => {
         if (menu.children?.length && menu.isGroup) {
             return (
@@ -47,7 +48,7 @@ const buildMenu = (menus: MenuPermissionNode[], pathname: string, closeSideBar: 
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                         <div className='mt-2 flex flex-col gap-2'>
-                            {buildMenu(menu.children, pathname, closeSideBar)}
+                            {buildMenu(menu.children, pathname,locale, closeSideBar)}
                         </div>
                     </CollapsibleContent>
                 </Collapsible>
@@ -58,7 +59,7 @@ const buildMenu = (menus: MenuPermissionNode[], pathname: string, closeSideBar: 
                     <SidebarMenuItem key={menu.menuName}>
                         <SidebarMenuButton
                             asChild isActive={menu.url === pathname}>
-                            <Link href={menu.url ?? ""} onClick={() => {
+                            <Link href={`${locale}/${menu.url ?? ""}`} onClick={() => {
                                 useActivityLog().log("CLICK_MENU", "menu:" + menu.menuName, { from: "sidebar" });
                                 closeSideBar();
                             }}>
@@ -77,6 +78,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const pathname = usePathname(); // ✅ ปลอดภัย เรียก hook ด้านบนสุด
     const { isMobile, setOpenMobile } = useSidebar();
     const { menus, setMenus } = useStoreMenu();
+    const locale = useLocale()
     React.useEffect(() => {
         if (session && (!menus)) {
             (async () => {
@@ -99,7 +101,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarHeader className='px-5'>
                 <Link href={"/"} className="h-8 w-8 rounded-lg">
                     <Avatar >
-                        <AvatarImage src={"https://github.com/shadcn.png"} alt={"logo"} />
+                        <AvatarImage src={"/icon.png"} alt={"logo"} />
                         <AvatarFallback className="rounded-lg">Logo</AvatarFallback>
                     </Avatar>
                 </Link>
@@ -127,7 +129,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         </SidebarGroupContent>
                     ) : (
                         <SidebarGroupContent className='gap-2 flex flex-col'>
-                            {buildMenu(menus, pathname, () => {
+                            {buildMenu(menus, pathname,locale, () => {
                                 if (isMobile) setOpenMobile(false);
                             })
                             }

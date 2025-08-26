@@ -1,10 +1,11 @@
-import { apiRequest, report } from "@/app/api/_utils/api-request";
+import { apiRequest } from "@/app/api/_utils/api-request";
 import { MenuPermissionNode, ResponseApiWithPayload } from "@/model";
 import axios from "axios";
 import { NextAuthOptions, Session, User } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 import logger from "../logger";
+import report from "../report";
 
 export async function refreshAccessToken(token: JWT) {
   logger.debug("Refreshing access token", { token });
@@ -60,6 +61,7 @@ export const authOptions: NextAuthOptions = {
             firstName: string;
             lastName: string;
             image: string;
+            isEmailVerify:boolean;
             permissions: MenuPermissionNode[];
           }>;
 
@@ -71,7 +73,7 @@ export const authOptions: NextAuthOptions = {
             lastName: user.payload.lastName,
             image: user.payload.image,
             roles: user.payload.roles,
-            verifyEmail: false,
+            verifyEmail: user.payload.isEmailVerify,
             accessTokenExpires: JSON.parse(atob(user.payload.token.split(".").at(1)!)).exp * 1000, //ที่ *1000 เพราะ ได้ค่าเป็น second เลยต่อง * 1000
             permissions: user.payload.permissions
           } as User;
@@ -83,10 +85,6 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-  pages: {
-    signIn: "/auth",
-
-  },
   session: { strategy: "jwt" },
   cookies: {
     sessionToken: {

@@ -1,8 +1,6 @@
 'use client';
-import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation'; // Use Next.js router for client-side navigation
-
 // A simple lock icon component (can be replaced with an SVG or icon library)
 const LockIcon = () => (
   <svg

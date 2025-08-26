@@ -1,6 +1,6 @@
-import logger from "@/lib/logger";
+import report from "@/lib/report";
 import { NextResponse } from "next/server";
-import { apiRequest, report, responseError } from "../_utils/api-request";
+import { apiRequest, responseError } from "../_utils/api-request";
 
 export const POST = async () => {
     try {
@@ -10,7 +10,7 @@ export const POST = async () => {
         });
         return NextResponse.json(data);
     } catch (error) {
-        logger.error(report(error))
+        report(error)
         throw responseError(error);
     }
 }

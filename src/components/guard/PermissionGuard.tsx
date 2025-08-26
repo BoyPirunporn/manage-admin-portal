@@ -1,21 +1,21 @@
+import { EnabledLocale, locales } from '@/i18n/routing';
 import { authOptions } from '@/lib/auth/auth';
 import logger from '@/lib/logger';
 import { getServerSession } from 'next-auth';
 import { PermissionNode } from 'next-auth/jwt';
 import { notFound } from 'next/navigation';
 import React from 'react';
-
 export type PermissionAction = 'view' | 'create' | 'update' | 'delete';
 
 interface PermissionGuardProps {
     children: React.ReactNode;
     path: string; // The base path of the resource (e.g., /users)
     action: PermissionAction; // The specific action to check
-}
+} 
 
 // Helper function to find permission node by path
 const findPermissionByPath = (path: string, permissions: PermissionNode[]): PermissionNode | null => {
-    const pathSegments = path.split("/").filter(Boolean);
+    const pathSegments = path.split("/").filter(Boolean).filter(e => !locales.includes(e as EnabledLocale));
     // sort menu longest first, root "/" last
     const sortedMenus = permissions.sort((a, b) => (b.url?.length ?? 0) - (a.url?.length ?? 0));
     const menu = sortedMenus.find((m) => {
@@ -30,8 +30,7 @@ const findPermissionByPath = (path: string, permissions: PermissionNode[]): Perm
 const PermissionGuard = async ({ children, path, action }: PermissionGuardProps) => {
     const session = await getServerSession(authOptions);
     const permissions = session?.permissions || [];
-    
-    const permission = findPermissionByPath(path, permissions);
+    const permission = findPermissionByPath(path,permissions);
     let hasPermission = false;
     if (permission) {
         switch (action) {

@@ -7,6 +7,7 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator
 } from '@/components/ui/breadcrumb';
+import { EnabledLocale, locales } from '@/i18n/routing';
 import { MenuPermissionNode } from '@/model';
 import { useStoreMenu } from '@/stores/store-menu';
 import Link from 'next/link';
@@ -22,7 +23,7 @@ export const BreadcrumbComponent = () => {
         menus: MenuPermissionNode[],
         pathname: string
     ): MenuPermissionNode[] {
-        const pathSegments = pathname.split("/").filter(Boolean);
+        const pathSegments = pathname.split("/").filter(Boolean).filter(e => !locales.includes(e as EnabledLocale));
         const lastPathIndex = pathSegments[pathSegments.length - 1];
         for (const menu of menus) {
             if (menu.url === "/" && pathname === "/") {
