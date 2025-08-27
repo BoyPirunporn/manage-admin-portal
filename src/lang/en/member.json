@@ -1,3 +1,14 @@
 {
-    
+    "heading": "Members",
+    "descriptions": "Create, update, and organize member information.",
+    "btnAdd": "Add",
+    "table": {
+        "image": "Image",
+        "email": "Email",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "createdAt": "Created At",
+        "updatedAt": "Updated At",
+        "action": "Action"
+    }
 }

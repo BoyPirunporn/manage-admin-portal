@@ -1,9 +1,9 @@
 'use client';
 import { cn, EachElement } from '@/lib/utils';
 import { COLOR_THEMES, ColorTheme, useThemeStore } from '@/stores/store-theme';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../ui/select';
 
-const mapThemeToClass:Record<ColorTheme, { primary: string; secondary: string; accent: string; destructive: string }>  = {
+const mapThemeToClass: Record<ColorTheme, { primary: string; secondary: string; accent: string; destructive: string }> = {
     "default": {
         primary: "bg-default-primary",
         secondary: "bg-default-secondary",
@@ -57,37 +57,40 @@ const ThemeColor = () => {
                     <SelectValue defaultValue={color} />
                 </SelectTrigger>
                 <SelectContent defaultValue={color}>
-                    <EachElement
-                        of={COLOR_THEMES}
-                        render={(theme) => (
-                            <SelectItem key={theme} value={theme}>
-                                <div className="flex flex-row gap-2 items-center">
-                                    {/* box preview ใช้ data-theme แทน */}
-                                    <div data-theme={theme} className="bg-background relative size-[26px] rounded border p-1">
-                                        <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-[2px]">
-                                            <div className={cn(
-                                                "rounded-[2px]",
-                                               mapThemeToClass[theme].primary
-                                            )} />
-                                            <div className={cn(
-                                                "rounded-[2px]",
-                                                mapThemeToClass[theme].secondary
-                                            )} />
-                                            <div className={cn(
-                                                "rounded-[2px]",
-                                                mapThemeToClass[theme].accent
-                                            )} />
-                                            <div className={cn(
-                                                "rounded-[2px]",
-                                                mapThemeToClass[theme].destructive
-                                            )} />
+                    <SelectGroup>
+                        <SelectLabel>{color.toUpperCase()}</SelectLabel>
+                        <EachElement
+                            of={COLOR_THEMES}
+                            render={(theme) => (
+                                <SelectItem className='cursor-pointer' key={theme} value={theme}>
+                                    <div className="flex flex-row gap-2 items-center">
+                                        {/* box preview ใช้ data-theme แทน */}
+                                        <div data-theme={theme} className="bg-background relative size-[26px] rounded border p-1">
+                                            <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-[2px]">
+                                                <div className={cn(
+                                                    "rounded-[2px]",
+                                                    mapThemeToClass[theme].primary
+                                                )} />
+                                                <div className={cn(
+                                                    "rounded-[2px]",
+                                                    mapThemeToClass[theme].secondary
+                                                )} />
+                                                <div className={cn(
+                                                    "rounded-[2px]",
+                                                    mapThemeToClass[theme].accent
+                                                )} />
+                                                <div className={cn(
+                                                    "rounded-[2px]",
+                                                    mapThemeToClass[theme].destructive
+                                                )} />
+                                            </div>
                                         </div>
+                                        <span>{theme}</span>
                                     </div>
-                                    <span>{theme}</span>
-                                </div>
-                            </SelectItem>
-                        )}
-                    />
+                                </SelectItem>
+                            )}
+                        />
+                    </SelectGroup>
                 </SelectContent>
             </Select>
         </div>

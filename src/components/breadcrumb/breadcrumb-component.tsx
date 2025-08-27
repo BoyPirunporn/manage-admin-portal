@@ -10,6 +10,7 @@ import {
 import { EnabledLocale, locales } from '@/i18n/routing';
 import { MenuPermissionNode } from '@/model';
 import { useStoreMenu } from '@/stores/store-menu';
+import { useLocale } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
@@ -18,6 +19,7 @@ import React from 'react';
 export const BreadcrumbComponent = () => {
     const { menus } = useStoreMenu();
     const pathname = usePathname();
+    const locale = useLocale();
 
     function findMenuChainByUrl(
         menus: MenuPermissionNode[],
@@ -68,11 +70,11 @@ export const BreadcrumbComponent = () => {
             <BreadcrumbList>
                 {crumbs.map((crumb, index) => {
                     return (
-                        <div className="flex items-center space-x-2" key={crumb.url+crumb.menuName+crumb.menuId}>
+                        <div className="flex items-center space-x-2" key={crumb.url + crumb.menuName + crumb.menuId}>
                             <BreadcrumbItem>
                                 {index < crumbs.length - 1 && crumb.url ? (
                                     <BreadcrumbLink asChild>
-                                        <Link href={crumb.url}>{crumb.menuName}</Link>
+                                        <Link href={`/${locale}` + crumb.url}>{crumb.menuName}</Link>
                                     </BreadcrumbLink>
                                 ) : (
                                     <BreadcrumbPage>{crumb.menuName}</BreadcrumbPage>

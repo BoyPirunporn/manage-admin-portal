@@ -11,7 +11,7 @@ export const COLOR_THEMES = ["default","summer", "spotify", "vscode","material",
 export type ColorTheme = (typeof COLOR_THEMES)[number];
 // export type Mode = "light" | "dark" | "system";
 
-const DEFAULT_COLOR: ColorTheme = "summer";
+const DEFAULT_COLOR: ColorTheme = "vscode";
 // const DEFAULT_MODE: Mode = "system";
 
 type ThemeState = {

@@ -14,7 +14,6 @@ const MemberClient = () => {
   const { can } = usePermissions();
   const t = useTranslations();
   const locale = useLocale()
-  console.log(t("common.email"));
   return (
     <div>
       <div className='mb-5 flex'>
@@ -26,7 +25,7 @@ const MemberClient = () => {
         )}
       </div>
 
-      <GlobalDataTable columns={memberColumn} apiUrl={'/api/member'} tableState={{
+      <GlobalDataTable columns={memberColumn()} apiUrl={'/api/member'} tableState={{
         pageSize: 10
       }} />
     </div>

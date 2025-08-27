@@ -1,4 +1,5 @@
 export const RouteBuilder = (locale: string) => {
+   
     return ({
         DASHBOARD: `/${locale}/dashboard`,
         SETTINGS: {
