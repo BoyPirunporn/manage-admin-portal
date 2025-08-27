@@ -2,10 +2,10 @@
 import GlobalDataTable from '@/components/datatable/global-datatable';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
+import { Link } from '@/i18n/navigation';
 import { RouteBuilder } from '@/lib/path';
 import { usePermissions } from '@/providers/PermissionProvider';
-import { useLocale, useTranslations } from 'next-intl';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { memberColumn } from '../columnDef/member-column';
 
 
@@ -13,14 +13,13 @@ import { memberColumn } from '../columnDef/member-column';
 const MemberClient = () => {
   const { can } = usePermissions();
   const t = useTranslations();
-  const locale = useLocale()
   return (
     <div>
       <div className='mb-5 flex'>
-        <Heading title={'Members'} description='Create, update, and organize member information.' />
-        {can("create", RouteBuilder(locale).SETTINGS.MEMBER.CREATE) && (
+        <Heading title={t("member.heading")} description={t("member.descriptions")} />
+        {can("create", RouteBuilder.SETTINGS.MEMBER.CREATE) && (
           <Button variant={"default"} className='ml-auto min-w-[100px] h-full border' asChild>
-            <Link href={RouteBuilder(locale).SETTINGS.MEMBER.CREATE} className='w-full h-full text-center'>Add</Link>
+            <Link href={RouteBuilder.SETTINGS.MEMBER.CREATE} className='w-full h-full text-center'>{t("member.btnAdd")}</Link>
           </Button>
         )}
       </div>

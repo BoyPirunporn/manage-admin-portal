@@ -32,15 +32,15 @@ const RolePage = async ({ params }: { params: GlobalPropsWithParams['params'] & 
     // --- Logic to parse the URL and determine the action ---
     if (actionParams.length === 1 && actionParams[0] === 'create') {
         action = 'create';
-        path = RouteBuilder(locale).SETTINGS.ROLE.CREATE;
+        path = RouteBuilder.SETTINGS.ROLE.CREATE;
     } else if (actionParams.length === 2 && actionParams[1] === 'update') {
         action = 'update';
         id = actionParams[0];
-        path = RouteBuilder(locale).SETTINGS.ROLE.UPDATE(id);
+        path = RouteBuilder.SETTINGS.ROLE.UPDATE(id);
     } else if (actionParams.length === 2 && actionParams[1] === 'view') {
         action = 'view';
         id = actionParams[0];
-        path = RouteBuilder(locale).SETTINGS.ROLE.VIEW(id);
+        path = RouteBuilder.SETTINGS.ROLE.VIEW(id);
     } else {
         // Any other URL structure is not valid for this page
         notFound();
@@ -53,6 +53,8 @@ const RolePage = async ({ params }: { params: GlobalPropsWithParams['params'] & 
             getMenus(),
         ]);
     }
+
+    console.log({menus})
     return (
         <PermissionGuard action={action} path={path}>
             <Heading

@@ -8,6 +8,7 @@ import {
     BreadcrumbSeparator
 } from '@/components/ui/breadcrumb';
 import { EnabledLocale, locales } from '@/i18n/routing';
+import { MapLocalMenu, MenuLabelKey } from '@/lib/menu-utils';
 import { MenuPermissionNode } from '@/model';
 import { useStoreMenu } from '@/stores/store-menu';
 import { useLocale } from 'next-intl';
@@ -20,6 +21,7 @@ export const BreadcrumbComponent = () => {
     const { menus } = useStoreMenu();
     const pathname = usePathname();
     const locale = useLocale();
+    const field: MenuLabelKey = MapLocalMenu[locale as EnabledLocale];
 
     function findMenuChainByUrl(
         menus: MenuPermissionNode[],
@@ -43,17 +45,19 @@ export const BreadcrumbComponent = () => {
                         return [{ ...menu, url: menu.isGroup ? null as unknown as string : menu.url }, ...childChain];
                     }
                 }
-                console.log(menu);
-                return lastPathIndex.toLowerCase() !== menu.menuName.toLowerCase()
-                    ? [
-                        menu,
-                        {
-                            ...menu,
-                            menuName: lastPathIndex.substring(0, 1).toUpperCase() + lastPathIndex.substring(1).toLowerCase(),
-                            url: null as unknown as string
-                        }
-                    ]
-                    : [menu];
+                // return lastPathIndex.toLowerCase() !== menu[field].toLowerCase()
+                //     ? [
+                //         menu,
+                //         {
+                //             ...menu,
+                //             menuNameEN: lastPathIndex.substring(0, 1).toUpperCase() + lastPathIndex.substring(1).toLowerCase(),
+                //             menuNameTH: lastPathIndex.substring(0, 1).toUpperCase() + lastPathIndex.substring(1).toLowerCase(),
+                //             url: null as unknown as string
+                //         }
+                //     ]
+                //     : 
+                //     [menu];
+                return [menu]
             }
         }
 
@@ -70,14 +74,14 @@ export const BreadcrumbComponent = () => {
             <BreadcrumbList>
                 {crumbs.map((crumb, index) => {
                     return (
-                        <div className="flex items-center space-x-2" key={crumb.url + crumb.menuName + crumb.menuId}>
+                        <div className="flex items-center space-x-2" key={crumb.url + crumb[field] + crumb.menuId}>
                             <BreadcrumbItem>
                                 {index < crumbs.length - 1 && crumb.url ? (
                                     <BreadcrumbLink asChild>
-                                        <Link href={`/${locale}` + crumb.url}>{crumb.menuName}</Link>
+                                        <Link href={`/${locale}` + crumb.url}>{crumb[field]}</Link>
                                     </BreadcrumbLink>
                                 ) : (
-                                    <BreadcrumbPage>{crumb.menuName}</BreadcrumbPage>
+                                    <BreadcrumbPage>{crumb[field]}</BreadcrumbPage>
                                 )}
                             </BreadcrumbItem>
                             {index < crumbs.length - 1 && <BreadcrumbSeparator />}

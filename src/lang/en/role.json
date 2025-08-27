@@ -1,0 +1,16 @@
+{
+    "heading": "Roles",
+    "description": "Manage role",
+    "form":{
+        "input":{
+            "roleName":"Role Name",
+            "roleDesc":"Role Description"
+        }
+    },
+    "table":{
+        "column":{
+            "name":"Name",
+            "desc":"Description"
+        }
+    }
+}

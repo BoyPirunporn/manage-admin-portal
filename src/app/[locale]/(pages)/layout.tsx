@@ -1,7 +1,7 @@
 import LanguageSwitcher from '@/components/luanges-switcher';
 import ThemeColor from '@/components/theme-color';
+import ThemeMode from '@/components/theme-mode/theme-mode';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import ThemeMode from '@/components/ui/theme-mode';
 import { Separator } from '@radix-ui/react-separator';
 import React from 'react';
 import { BreadcrumbComponent } from '../../../components/breadcrumb/breadcrumb-component';

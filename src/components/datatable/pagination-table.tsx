@@ -7,6 +7,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { useTranslations } from "next-intl";
 
 interface Props {
   currentPage: number;
@@ -15,6 +16,7 @@ interface Props {
 }
 
 function PaginationComponent({ currentPage, totalPages, onPageChange }: Props) {
+  const t = useTranslations("datatable.pagination");
   // สร้าง array page numbers ที่จะ render ตาม logic
   const getPageNumbers = () => {
     const pages = [];
@@ -28,9 +30,9 @@ function PaginationComponent({ currentPage, totalPages, onPageChange }: Props) {
       // แสดงแบบมี ... ตามโจทย์
 
       if (currentPage <= 4) {
-        if(currentPage === 1){
-          pages.push(1)
-        }else{
+        if (currentPage === 1) {
+          pages.push(1);
+        } else {
           pages.push(1, 2, 3, 4, 5, "ellipsis", totalPages);
         }
       } else if (currentPage >= totalPages - 3) {
@@ -58,7 +60,9 @@ function PaginationComponent({ currentPage, totalPages, onPageChange }: Props) {
               if (currentPage > 1) onPageChange(currentPage - 1);
             }}
             disabled={currentPage === 1}
-          />
+          >
+            <span className="hidden md:block">{t("prevent")}</span>
+          </PaginationPrevious>
         </PaginationItem>
 
         {pages.map((page, idx) =>
@@ -91,7 +95,9 @@ function PaginationComponent({ currentPage, totalPages, onPageChange }: Props) {
             }}
             disabled={currentPage === totalPages}
             className="disabled:opacity-50 disabled:!pointer-events-none"
-          />
+          >
+            <span className="hidden md:block">{t("next")}</span>
+          </PaginationNext>
         </PaginationItem>
       </PaginationContent>
     </Pagination>

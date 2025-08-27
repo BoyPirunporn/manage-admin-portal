@@ -7,7 +7,7 @@ import { GlobalPropsWithParams } from "@/model";
 const ActivityLogsPage = async ({params}:GlobalPropsWithParams) => {
     const {locale} = await params;
     return (
-        <PermissionGuard action={"view"} path={RouteBuilder(locale).SETTINGS.ACTIVITY_LOGS.LIST}>
+        <PermissionGuard action={"view"} path={RouteBuilder.SETTINGS.ACTIVITY_LOGS.LIST}>
             <div className='mb-5 flex'>
                 <Heading title={'Activity Logs'} description='Monitor member actions and system events in real-time.' />
             </div>

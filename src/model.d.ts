@@ -35,7 +35,8 @@ interface TableState {
 }
 export interface MenuModel {
     id?: string | null;
-    title: string;
+    nameEN: string;
+    nameTH: string;
     url?: string | null;
     icon?: keyof typeof Icons | null;
     isVisible: boolean;
@@ -65,7 +66,8 @@ interface MenuModelWithRoleMenuPermission extends MenuModel {
 
 interface MenuPermissionNode {
     menuId: string;
-    menuName: string;
+    nameEN: string;
+    nameTH: string;
     url: string;
     icon: string;
     menuDisplayOrder: number;

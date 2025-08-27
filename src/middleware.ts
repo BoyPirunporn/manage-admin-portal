@@ -143,7 +143,6 @@ const authMiddleware = withAuth(
 export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-
   // ตรวจสอบว่าเป็นหน้า public หรือไม่ (โดยไม่สน locale)
   const isPublic = publicPages.some((path) => pathname.endsWith(path));
 

@@ -1,6 +1,10 @@
 {
-    "submit": "Submit",
-    "cancel": "Cancel",
-    "email":"Email",
-    "password":"Password"
+    "btnSubmit": "Submit",
+    "btnAdd":"Add",
+    "btnCancel": "Cancel",
+    "email": "Email",
+    "password": "Password",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "action": "Action"
 }

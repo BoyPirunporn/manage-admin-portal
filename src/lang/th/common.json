@@ -1,6 +1,10 @@
 {
-    "submit": "บันทึก",
-    "cancel": "ยกเลิก",
-    "email":"อีเมล",
-    "password":"รหัสผ่าน"
+    "btnSubmit": "บันทึก",
+    "btnAdd":"เพิ่ม",
+    "btnCancel": "ยกเลิก",
+    "email": "อีเมล",
+    "password": "รหัสผ่าน",
+    "createdAt": "วันที่สร้าง",
+    "updatedAt": "วันที่แก้ไข",
+    "action": "การจัดการ"
 }

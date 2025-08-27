@@ -14,6 +14,7 @@ import {
     RowData,
     Table as TableType
 } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
 import React, { SetStateAction } from 'react';
 import {
     Select,
@@ -25,7 +26,6 @@ import {
 } from '../ui/select';
 import { Skeleton } from '../ui/skeleton';
 import PaginationComponent from './pagination-table';
-import logger from '@/lib/logger';
 
 interface IOptionFilter<T> {
     filterHeader: boolean;
@@ -47,7 +47,7 @@ interface IDataTable<T extends RowData> {
     setPageSize: (value: PageSize) => void;
     setPageIndex: React.Dispatch<SetStateAction<number>>;
     pageSize: PageSize;
-    totalElement:number;
+    totalElement: number;
 }
 
 export const pageSizeOption = [2, 5, 10, 20, 50, 100];
@@ -67,6 +67,7 @@ const DataTable = <T,>({
     pageSize,
     totalElement
 }: IDataTable<T>) => {
+    const t = useTranslations();
     return (
         <div className="w-full">
             <div className="rounded-md border overflow-x-auto">
@@ -180,7 +181,11 @@ const DataTable = <T,>({
             </div>
             <div className="flex items-center justify-end space-x-2 py-4">
                 <div className="flex-1 text-sm text-muted-foreground">
-                    Page {!table.getRowModel().rows?.length ? 0 : pageIndex + 1} of {pageCount || 0} from {totalElement}
+                    {t("datatable.pagination.page", {
+                        pageIndex: (!table.getRowModel().rows?.length ? 0 : pageIndex + 1),
+                        pageCount: (pageCount ?? 0),
+                        totalElement: totalElement
+                    })}
                 </div>
                 <Select
                     defaultValue={pageSize.toString()}
@@ -203,7 +208,7 @@ const DataTable = <T,>({
                         currentPage={pageIndex + 1}
                         totalPages={pageCount}
                         onPageChange={(p) => {
-                            setPageIndex(p -1);
+                            setPageIndex(p - 1);
                         }} />
                     {/* <Button
                         variant="outline"

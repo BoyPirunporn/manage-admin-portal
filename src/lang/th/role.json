@@ -1,0 +1,16 @@
+{
+    "heading": "จัดการสิทธิ์",
+    "description": "",
+    "form":{
+        "input":{
+            "roleName":"ชื่อสิทธิ์",
+            "roleDesc":"รายละเอียด"
+        }
+    },
+    "table":{
+        "column":{
+            "name":"ชื่อสิทธิ์",
+            "desc":"รายละเอียด"
+        }
+    }
+}

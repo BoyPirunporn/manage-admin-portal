@@ -11,6 +11,7 @@ import report from "@/lib/report";
 import { MenuModel, RoleModelWithPermission } from "@/model";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -49,6 +50,7 @@ const RoleAndPermissionForm = ({
         Record<string, boolean>
     >({});
     const router = useRouter();
+    const t = useTranslations();
 
     const form = useForm<RoleSchema>({
         resolver: zodResolver(roleSchema),
@@ -114,9 +116,9 @@ const RoleAndPermissionForm = ({
             });
 
             if (data) {
-                useActivityLog().log("EDIT", RouteBuilder().SETTINGS.ROLE.VIEW(data.id!), { from: "ACTION IN FORM", data: schema });
+                useActivityLog().log("EDIT", RouteBuilder.SETTINGS.ROLE.VIEW(data.id!), { from: "ACTION IN FORM", data: schema });
             } else {
-                useActivityLog().log("CREATE", RouteBuilder().SETTINGS.ROLE.CREATE, { from: "ACTION IN FORM", data: schema });
+                useActivityLog().log("CREATE", RouteBuilder.SETTINGS.ROLE.CREATE, { from: "ACTION IN FORM", data: schema });
             }
             toast.success(`Role has been ${data ? "updated" : "created"}!`, {
                 duration: 2000,
@@ -158,11 +160,11 @@ const RoleAndPermissionForm = ({
                 className="mt-5 flex flex-col gap-5"
             >
                 <div className="md:!max-w-lg flex flex-col gap-2">
-                    <FormInputField control={form.control} name="name" label="Role name" />
+                    <FormInputField control={form.control} name="name" label={t("role.form.input.roleName")} />
                     <FormInputField
                         control={form.control}
                         name="description"
-                        label="Role description"
+                        label={t("role.form.input.roleDesc")}
                     />
                 </div>
 

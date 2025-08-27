@@ -1,6 +1,8 @@
 'use client';
 import { Button } from '@/components/ui/button';
+import ThemeProvider from '@/providers/ThemeProvider';
 import { useRouter } from 'next/navigation'; // Use Next.js router for client-side navigation
+import './globals.css';
 // A simple lock icon component (can be replaced with an SVG or icon library)
 const LockIcon = () => (
   <svg
@@ -22,23 +24,24 @@ const LockIcon = () => (
 
 const NotFound = () => {
   const router = useRouter();
-
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-4 text-center p-4">
-      <LockIcon />
-      <h1 className="text-4xl md:text-5xl font-bold text-primary mt-4">
-        Access Denied
-      </h1>
-      <p className="max-w-md text-muted-foreground">
-        Sorry, you don't have the key for this page, or the page doesn't exist. Please contact your administrator if you believe this is an error.
-      </p>
-      <Button
-        onClick={() => router.push("/")} // Use router.push for faster, client-side navigation
-        className="mt-4"
-      >
-        Return to Dashboard
-      </Button>
-    </main>
+    <ThemeProvider>
+      <main className="flex min-h-screen flex-col items-center justify-center gap-4 text-center p-4">
+        <LockIcon />
+        <h1 className="text-4xl md:text-5xl font-bold text-primary mt-4">
+          Access Denied
+        </h1>
+        <p className="max-w-md text-muted-foreground">
+          Sorry, you don't have the key for this page, or the page doesn't exist. Please contact your administrator if you believe this is an error.
+        </p>
+        <Button
+          onClick={() => router.back()} // Use router.push for faster, client-side navigation
+          className="mt-4"
+        >
+          Back
+        </Button>
+      </main>
+    </ThemeProvider>
   );
 };
 

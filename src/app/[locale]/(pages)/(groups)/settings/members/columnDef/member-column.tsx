@@ -1,18 +1,17 @@
 import ColumnAction from "@/components/datatable/column-action";
 import { useActivityLog } from "@/hooks/use-activity-log";
+import { useRouter } from "@/i18n/navigation";
 import { RouteBuilder } from "@/lib/path";
 import { CustomColumnDef, UserModel } from "@/model";
 import ImageProvider from "@/providers/ImageProvider";
 import { usePermissions } from "@/providers/PermissionProvider";
-import { useLocale, useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 export const memberColumn = (): CustomColumnDef<UserModel>[] => {
-    const locale = useLocale();
-    const t = useTranslations("member");
+    const t = useTranslations();
     return [
         {
             accessorKey: "imageUrl",
-            header: t("table.image"),
+            header: t("member.table.image"),
             cell: ({ getValue }) => {
                 return (
                     <div className="relative w-20 h-20">
@@ -23,33 +22,33 @@ export const memberColumn = (): CustomColumnDef<UserModel>[] => {
         },
         {
             accessorKey: "email",
-            header: t("table.email")
+            header: t("member.table.email")
         },
         {
             accessorKey: "firstName",
-            header: t("table.firstName")
+            header: t("member.table.firstName")
         },
         {
             accessorKey: "lastName",
-            header: t("table.lastName")
+            header: t("member.table.lastName")
         },
         {
             accessorKey: "createdAt",
-            header: t("table.createdAt")
+            header: t("common.createdAt")
         },
         {
             accessorKey: "updatedAt",
-            header: t("table.updatedAt")
+            header: t("common.updatedAt")
         },
         {
             accessorKey: "id",
-            header: t("table.action"),
+            header: t("common.action"),
             alignItem: "center",
-            cell: ({ getValue, row }) => {
+            cell: ({  row }) => {
                 const { can } = usePermissions();
                 const router = useRouter();
-                const canView = can("view", RouteBuilder(locale).SETTINGS.MEMBER.VIEW(row.original.id!));
-                const canEdit = can("update", RouteBuilder(locale).SETTINGS.MEMBER.UPDATE(row.original.id!));
+                const canView = can("view", RouteBuilder.SETTINGS.MEMBER.VIEW(row.original.id!));
+                const canEdit = can("update", RouteBuilder.SETTINGS.MEMBER.UPDATE(row.original.id!));
                 return (
                     <ColumnAction
                         target="MEMBER"
@@ -62,11 +61,11 @@ export const memberColumn = (): CustomColumnDef<UserModel>[] => {
                         canEdit={canEdit}
                         canView={canView}
                         handleEdit={() => {
-                            router.push(RouteBuilder(locale).SETTINGS.MEMBER.UPDATE(row.original.id!));
+                            router.push(RouteBuilder.SETTINGS.MEMBER.UPDATE(row.original.id!));
                         }}
                         handleView={() => {
-                            useActivityLog().log("VIEW", RouteBuilder(locale).SETTINGS.MEMBER.VIEW(row.original.id!), { from: "ACTION DATA TABLE", id: row.original.id });
-                            router.push(RouteBuilder(locale).SETTINGS.MEMBER.VIEW(row.original.id!));
+                            useActivityLog().log("VIEW", RouteBuilder.SETTINGS.MEMBER.VIEW(row.original.id!), { from: "ACTION DATA TABLE", id: row.original.id });
+                            router.push(RouteBuilder.SETTINGS.MEMBER.VIEW(row.original.id!));
                         }} />
                 );
             }

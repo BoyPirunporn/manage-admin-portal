@@ -7,7 +7,7 @@ const MemberPage = async ({
 }: GlobalPropsWithParams) => {
     const {locale} = await params;
     return (
-        <PermissionGuard path={RouteBuilder(locale).SETTINGS.MEMBER.LIST} action={'view'}>
+        <PermissionGuard path={RouteBuilder.SETTINGS.MEMBER.LIST} action={'view'}>
             <MemberClient />
         </PermissionGuard>
     );

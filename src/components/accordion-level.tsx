@@ -1,4 +1,7 @@
+import { EnabledLocale } from "@/i18n/routing";
+import { MapLocalMenu, MenuLabelKey } from "@/lib/menu-utils";
 import { MenuModel } from "@/model";
+import { useLocale } from "next-intl";
 import React from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
 import { Checkbox } from "./ui/checkbox";
@@ -24,6 +27,8 @@ const AccordionLevel = ({
   handleCheck: (menu: MenuModel, permission: PermissionKey, checked: boolean) => void;
   disabled: boolean;
 }) => {
+  const locale = useLocale();
+  const field: MenuLabelKey = MapLocalMenu[locale as EnabledLocale];
   const [accordionValue, setAccordionValue] = React.useState<string | undefined>(undefined);
   return (
     <Accordion
@@ -34,8 +39,8 @@ const AccordionLevel = ({
       className="flex flex-col gap-5"
     >
       {items.map((item) => (
-        <AccordionItem key={item.id} value={item.title}>
-          <AccordionTrigger className="cursor-pointer border px-2">{item.title}</AccordionTrigger>
+        <AccordionItem key={item.id} value={item[field]}>
+          <AccordionTrigger className="cursor-pointer border px-2">{item[field]}</AccordionTrigger>
           <AccordionContent className="rounded-md px-3 py-2">
             {item.children?.length ? (
               <AccordionLevel

@@ -40,7 +40,7 @@ export const menuItemColumn: CustomColumnDef<MenuModel>[] = [
                             ssr: false,
                         });
                         useStoreModal.getState().openModal({
-                            title: "Menu of " + row.original.title,
+                            title: "Menu of " + row.original.nameTH,
                             size: "lg",
                             content: (
                                 <React.Suspense fallback={<div>Loading...</div>}>
@@ -94,7 +94,7 @@ export const menuItemColumn2: CustomColumnDef<MenuModel>[] = [
                             ssr: false,
                         });
                         useStoreModal.getState().openModal({
-                            title: "Menu of " + row.original.title,
+                            title: "Menu of " + row.original.nameTH,
                             size: "lg",
                             content: (
                                 <React.Suspense fallback={<div>Loading...</div>}>

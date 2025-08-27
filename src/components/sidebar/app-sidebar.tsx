@@ -1,41 +1,46 @@
 'use client';
-import React, { useCallback, useMemo, useEffect } from 'react';
+import { ChevronRight } from 'lucide-react';
+import { useLocale } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useLocale } from 'next-intl';
-import { ChevronRight } from 'lucide-react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 // Assuming these are your component imports
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail, useSidebar } from '@/components/ui/sidebar';
-import { Skeleton } from '../ui/skeleton';
-import ButtonLink from '../link';
-import RenderIcon, { IconName } from '../ui/render-icon';
-import { NavUser } from './nav-user';
-import ThemeMode from '../ui/theme-mode';
-import ThemeColor from '../theme-color';
-import { EachElement } from '@/lib/utils';
 import logger from '@/lib/logger';
+import { EachElement } from '@/lib/utils';
+import ThemeColor from '../theme-color';
+import ThemeMode from '../theme-mode/theme-mode';
+import RenderIcon, { IconName } from '../ui/render-icon';
+import { Skeleton } from '../ui/skeleton';
+import { NavUser } from './nav-user';
 
 // Assuming these are your store/hook imports
-import { useStoreUser } from '@/stores/store-user';
-import { useStoreMenu } from '@/stores/store-menu';
+import { EnabledLocale } from '@/i18n/routing';
+import { MapLocalMenu, MenuLabelKey } from '@/lib/menu-utils';
 import { MenuPermissionNode } from '@/model'; // Make sure this model is correctly defined
+import { useStoreMenu } from '@/stores/store-menu';
+import { useStoreUser } from '@/stores/store-user';
+
+
 
 // The buildMenu function remains largely the same, but it's now a pure rendering function.
 const buildMenu = (menus: MenuPermissionNode[], pathname: string, locale: string, closeSideBar: () => void) => {
+
     // Sort menus by display order before mapping
     return menus.sort((a, b) => a.menuDisplayOrder - b.menuDisplayOrder).map(menu => {
+        const field: MenuLabelKey = MapLocalMenu[locale as EnabledLocale];
         if (menu.children?.length && menu.isGroup) {
             return (
                 <Collapsible
-                    key={menu.menuName}
+                    key={menu[field]}
                     defaultOpen
                     className="group/collapsible p-[calc(var(--spacing)_*_2)]"
                 >
                     <CollapsibleTrigger className='flex flex-row items-center w-full cursor-pointer'>
-                        {menu.menuName}
+                        {menu[field]}
                         <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
                     </CollapsibleTrigger>
                     <CollapsibleContent>
@@ -48,7 +53,7 @@ const buildMenu = (menus: MenuPermissionNode[], pathname: string, locale: string
         } else {
             // Only render the menu item if it's marked as visible
             return menu.isVisible ? (
-                <SidebarMenu key={menu.menuName}>
+                <SidebarMenu key={menu[field]}>
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild isActive={pathname.startsWith(`/${locale}${menu.url}`)}>
                             <Link
@@ -57,7 +62,7 @@ const buildMenu = (menus: MenuPermissionNode[], pathname: string, locale: string
                                 onClick={closeSideBar}
                             >
                                 {menu.icon && <RenderIcon name={menu.icon as IconName} />}
-                                {menu.menuName}
+                                {menu[field]}
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>

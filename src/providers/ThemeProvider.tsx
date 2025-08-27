@@ -7,19 +7,24 @@ const ThemeProvider = ({
 }: Readonly<{
     children: React.ReactNode;
 }>) => {
-
     const color = useThemeStore((s) => s.color);
 
     // apply on mount & on change
-    useEffect(() => { applyTheme({}); }, []);
     useEffect(() => { applyTheme({ color }); }, [color]);
 
     const [mount, setMount] = useState(false);
 
     useEffect(() => {
+        if (!localStorage.getItem("theme")) {
+            localStorage.setItem("theme", "system");
+        }
+    }, []);
+    useEffect(() => {
         setMount(true);
     }, []);
     if (!mount) return null;
+
+
 
     return (
         <NextThemesProvider
@@ -27,6 +32,8 @@ const ThemeProvider = ({
             defaultTheme={"system"}
             enableSystem
             disableTransitionOnChange
+            storageKey='theme'
+            enableColorScheme
         >
             {children}
         </NextThemesProvider>

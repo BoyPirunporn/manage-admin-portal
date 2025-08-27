@@ -21,15 +21,15 @@ const CreateOrUpdateMemberPage = async (
     // --- Logic to parse the URL and determine the action ---
     if (actionParams.length === 1 && actionParams[0] === 'create') {
         action = 'create';
-        path = RouteBuilder(locale).SETTINGS.MEMBER.CREATE;
+        path = RouteBuilder.SETTINGS.MEMBER.CREATE;
     } else if (actionParams.length === 2 && actionParams[1] === 'update') {
         action = 'update';
         id = actionParams[0];
-        path = RouteBuilder(locale).SETTINGS.MEMBER.UPDATE(id);
+        path = RouteBuilder.SETTINGS.MEMBER.UPDATE(id);
     } else if (actionParams.length === 2 && actionParams[1] === 'view') {
         action = 'view';
         id = actionParams[0];
-        path = RouteBuilder(locale).SETTINGS.MEMBER.VIEW(id);
+        path = RouteBuilder.SETTINGS.MEMBER.VIEW(id);
     } else {
         // Any other URL structure is not valid for this page
         notFound();
