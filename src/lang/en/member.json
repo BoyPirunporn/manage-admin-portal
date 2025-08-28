@@ -2,11 +2,15 @@
     "heading": "Members",
     "descriptions": "Create, update, and organize member information.",
     "btnAdd": "Add",
+    "email": "Email",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "password": "รหัสผ่าน",
     "table": {
-        "image": "Image",
-        "email": "Email",
-        "firstName": "First Name",
-        "lastName": "Last Name"
-        
+        "image": "Image"
+    },
+    "form": {
+        "input": {
+        }
     }
 }

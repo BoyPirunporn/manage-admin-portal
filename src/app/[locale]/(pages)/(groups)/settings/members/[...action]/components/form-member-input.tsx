@@ -22,7 +22,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useActivityLog } from '@/hooks/use-activity-log';
 import report from '@/lib/report';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useRouter } from '@/i18n/navigation';
 
 
 const roleSchema: z.ZodType<Omit<RoleModel, "description">> = z.object({
@@ -70,7 +71,7 @@ const FormMemberInput = ({
   permissions: PermissionModel[];
   action: string;
 }) => {
-
+  const t = useTranslations();
   const router = useRouter();
   const form = useForm<MemberSchema>({
     resolver: zodResolver(memberSchema as any),
@@ -143,14 +144,14 @@ const FormMemberInput = ({
           />
         </div>
         <form onSubmit={form.handleSubmit(handleSubmit)} className='grid grid-cols-1 md:grid-cols-2 gap-5'>
-          <FormInputField control={form.control} name='email' label='Email' />
-          <FormInputField control={form.control} name='password' readonly={!!data} label='Password' type='password' />
-          <FormInputField control={form.control} name='firstName' label='First Name' />
-          <FormInputField control={form.control} name='lastName' label='Last Name' />
+          <FormInputField control={form.control} name='email' label={t("member.email")} />
+          <FormInputField control={form.control} name='password' readonly={!!data} label={t("member.password")} type='password' />
+          <FormInputField control={form.control} name='firstName' label={t("member.firstName")} />
+          <FormInputField control={form.control} name='lastName' label={t("member.lastName")} />
 
           {/* Roles */}
           <div className='mb-5 flex flex-col gap-5 md:col-span-2'>
-            <h1 className='text-xl font-bold'>Roles</h1>
+            <h1 className='text-xl font-bold'>{t("role.heading")}</h1>
             <FormField
               control={form.control}
               name="roleId"
@@ -236,7 +237,7 @@ const FormMemberInput = ({
             />
           </div> */}
           {/* End Menus */}
-          <Button disabled={form.formState.disabled || form.formState.isSubmitting} className='m-auto md:col-span-2 min-w-sm '>Submit</Button>
+          <Button disabled={form.formState.disabled || form.formState.isSubmitting} className='m-auto md:col-span-2 min-w-sm '>{t("common.btnSubmit")}</Button>
         </form>
       </div>
     </Form>

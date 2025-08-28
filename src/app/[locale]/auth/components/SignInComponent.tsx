@@ -41,7 +41,6 @@ const SignInComponent = ({
 
     const handleSubmit = async (data: SignIn) => {
         try {
-            await delay(5000);
             const response = await signIn("credentials", {
                 redirect: false,
                 ...data

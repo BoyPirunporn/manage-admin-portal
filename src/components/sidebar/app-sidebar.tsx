@@ -28,10 +28,10 @@ import { useStoreUser } from '@/stores/store-user';
 
 // The buildMenu function remains largely the same, but it's now a pure rendering function.
 const buildMenu = (menus: MenuPermissionNode[], pathname: string, locale: string, closeSideBar: () => void) => {
+    const field: MenuLabelKey = MapLocalMenu[locale as EnabledLocale];
 
     // Sort menus by display order before mapping
     return menus.sort((a, b) => a.menuDisplayOrder - b.menuDisplayOrder).map(menu => {
-        const field: MenuLabelKey = MapLocalMenu[locale as EnabledLocale];
         if (menu.children?.length && menu.isGroup) {
             return (
                 <Collapsible

@@ -2,11 +2,17 @@
     "heading": "สมาชิก",
     "descriptions": "สร้าง, แก้ไข, และดูข้อมูลสมาชิก",
     "btnAdd": "เพิ่ม",
+    "email": "อีเมล",
+    "firstName": "ชื่อ",
+    "lastName": "นามสกุล",
+    "password": "รหัสผ่าน",
     "table": {
-        "image": "รูปภาพ",
-        "email": "อีเมล",
-        "firstName": "ชื่อ",
-        "lastName": "นามสกุล"
-        
+        "image": "รูปภาพ"
+    },
+    "form":{
+        "input":{
+            
+          
+        }
     }
 }

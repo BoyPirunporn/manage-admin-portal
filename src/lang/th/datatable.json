@@ -1,7 +1,7 @@
 {
     "pagination":{
         "page":"หน้าที่ {pageIndex} จาก {pageCount} ทั้งหมด {totalElement}",
-        "prevent":"ก่อนห้าน",
+        "prevent":"ก่อนหน้า",
         "next":"ถัดไป"
     }
 }

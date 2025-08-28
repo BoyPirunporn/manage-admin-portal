@@ -7,11 +7,14 @@ import { Form } from '@/components/ui/form';
 import { FormInputField } from '@/components/ui/form-input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
+import { EnabledLocale } from '@/i18n/routing';
+import { MapLocalMenu, MenuLabelKey } from '@/lib/menu-utils';
 import { EachElement } from '@/lib/utils';
 import { MenuPermissionNode } from '@/model';
 import { useStoreMenu } from '@/stores/store-menu';
 import { useStoreUser } from '@/stores/store-user';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useLocale } from 'next-intl';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -91,10 +94,12 @@ const AccordionComponent = ({
 }: {
   items: MenuPermissionNode[];
 }) => {
+  const locale = useLocale();
+  const field: MenuLabelKey = MapLocalMenu[locale as EnabledLocale];
   const [accordionValue, setAccordionValue] = React.useState<string | undefined>(undefined);
 
   const renderPermission = (item: MenuPermissionNode) => {
-    let elements:React.ReactNode[] = [];
+    let elements: React.ReactNode[] = [];
     Object.entries(item).forEach(([key, value]) => {
       if (key in KEY_MAP) {
         const mapKey = `${item.menuId}_${KEY_MAP[key]}`;
@@ -120,9 +125,9 @@ const AccordionComponent = ({
       onValueChange={setAccordionValue}
       className="flex flex-col gap-5"
     >
-      {items && items.length &&items.map((item) => (
-        <AccordionItem key={item.menuId} value={item.menuName}>
-          <AccordionTrigger className="cursor-pointer border px-2">{item.menuName}</AccordionTrigger>
+      {items && items.length && items.map((item) => (
+        <AccordionItem key={item.menuId} value={item[field]}>
+          <AccordionTrigger className="cursor-pointer border px-2">{item[field]}</AccordionTrigger>
           <AccordionContent className="rounded-md px-3 py-2">
             {item.children?.length ? (
               <AccordionComponent

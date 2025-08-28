@@ -22,15 +22,15 @@ export const memberColumn = (): CustomColumnDef<UserModel>[] => {
         },
         {
             accessorKey: "email",
-            header: t("member.table.email")
+            header: t("member.email")
         },
         {
             accessorKey: "firstName",
-            header: t("member.table.firstName")
+            header: t("member.firstName")
         },
         {
             accessorKey: "lastName",
-            header: t("member.table.lastName")
+            header: t("member.lastName")
         },
         {
             accessorKey: "createdAt",

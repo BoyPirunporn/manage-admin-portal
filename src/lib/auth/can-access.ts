@@ -1,5 +1,6 @@
 import { PermissionNode } from "next-auth/jwt";
 import logger from "../logger";
+import { RouteBuilder } from "../path";
 
 export const canAccess = (
     path: string,
@@ -10,7 +11,7 @@ export const canAccess = (
         return true;
     }
 
-    const pathSegments = RouteBuilder.Builder().split("/").filter(Boolean);
+    const pathSegments = path.split("/").filter(Boolean);
     // sort menu longest first, root "/" last
     const sortedMenus = menus.sort((a, b) => (b.url?.length ?? 0) - (a.url?.length ?? 0));
     const menu = sortedMenus.find((m) => {
