@@ -1,10 +1,13 @@
 {
     "btnSubmit": "Submit",
-    "btnAdd":"Add",
+    "btnAdd": "Add",
     "btnCancel": "Cancel",
     "email": "Email",
     "password": "Password",
+    "confirmPassword": "Confirm Password",
     "createdAt": "Created At",
     "updatedAt": "Updated At",
-    "action": "Action"
+    "action": "Action",
+    "verifyEmailHeading": "Verify Email"
+    
 }

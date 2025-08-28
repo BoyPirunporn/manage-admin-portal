@@ -1,10 +1,13 @@
 {
     "btnSubmit": "บันทึก",
-    "btnAdd":"เพิ่ม",
+    "btnAdd": "เพิ่ม",
     "btnCancel": "ยกเลิก",
     "email": "อีเมล",
     "password": "รหัสผ่าน",
+    "confirmPassword": "ยืนยันรหัสผ่าน",
     "createdAt": "วันที่สร้าง",
     "updatedAt": "วันที่แก้ไข",
-    "action": "การจัดการ"
+    "action": "การจัดการ",
+    "verifyEmailHeading": "ยืนยันตัวตน"
+
 }
