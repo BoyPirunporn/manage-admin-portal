@@ -40,7 +40,7 @@ const PermissionGuard = async ({ children, path, action }: PermissionGuardProps)
             case 'delete': hasPermission = permission.canDelete; break;
         }
     }
-    logger.debug({ canAccess: hasPermission, path, action });
+    logger.info({ canAccess: hasPermission, path, action });
 
     // If the user does not have the required permission, show a 404 page.
     if (!hasPermission) {

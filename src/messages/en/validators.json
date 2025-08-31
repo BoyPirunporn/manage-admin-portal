@@ -1,6 +1,8 @@
 {
     "required": {
-        "password": "{label} must be between 8 and 50 characters"
+        "password": "{label} must be between 8 and 50 characters",
+        "text":"{field} must not be blank"
+
     },
     "invalid": {
         "password": "{label} must be at least 8 characters long and include uppercase, lowercase, number, and special character."

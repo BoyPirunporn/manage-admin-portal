@@ -1,13 +1,13 @@
 'use client';
 
 import { usePathname, useRouter } from '@/i18n/navigation';
-import { locales } from '@/i18n/routing';
+import { EnabledLocale, locales } from '@/i18n/routing';
 import { EachElement } from '@/lib/utils';
 import { useStoreBackdrop } from '@/stores/store-backdrop';
+import { SelectGroup } from '@radix-ui/react-select';
 import { useLocale } from 'next-intl';
 import { useEffect, useTransition } from 'react';
-import { Select, SelectContent, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../ui/select';
-import { SelectGroup } from '@radix-ui/react-select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 export default function LanguageSwitcher() {
   // useTransition ใช้เพื่อแสดงสถานะ loading ขณะเปลี่ยนหน้า/ภาษา
@@ -20,7 +20,7 @@ export default function LanguageSwitcher() {
   // useLocale ใช้เพื่อดึงค่าภาษาปัจจุบัน
   const locale = useLocale();
 
-  const handleSwitch = (newLocale: string) => {
+  const handleSwitch = (newLocale: EnabledLocale) => {
     // startTransition จะช่วยให้ UI ไม่ค้างระหว่างที่รอโหลดภาษาใหม่
     startTransition(() => {
       router.replace(pathname, { locale: newLocale });
@@ -29,9 +29,9 @@ export default function LanguageSwitcher() {
 
   useEffect(() => {
     if (isPending) {
-      useStoreBackdrop.getState().toggle("visible");
+      useStoreBackdrop.getState().show();
     } else {
-      useStoreBackdrop.getState().toggle("invisible");
+      useStoreBackdrop.getState().hide();
     }
   }, [isPending]);
 

@@ -1,16 +1,23 @@
 {
     "heading": "Roles",
     "description": "Manage role",
-    "form":{
-        "input":{
-            "roleName":"Role Name",
-            "roleDesc":"Role Description"
+    "toastSuccess": "Role {msg} has been {state}",
+    "toastDescription": "Redirecting to Role list...",
+    "form": {
+        "heading":{
+            "View":"View role",
+            "Create":"Create role",
+            "Update":"Update role"
+        },
+        "input": {
+            "roleName": "Role Name",
+            "roleDesc": "Role Description"
         }
     },
-    "table":{
-        "column":{
-            "name":"Name",
-            "desc":"Description"
+    "table": {
+        "column": {
+            "name": "Name",
+            "desc": "Description"
         }
     }
 }

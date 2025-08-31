@@ -22,7 +22,7 @@ const ListPage = () => {
 
             <GlobalDataTable
                 columns={roleColumnDef()}
-                apiUrl={'/api/roles/datatable'}
+                apiUrl={'/api/v1/roles/datatable'}
                 tableState={{
                     pageSize: 10
                 }}

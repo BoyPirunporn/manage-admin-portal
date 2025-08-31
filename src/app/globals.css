@@ -142,10 +142,10 @@
     --text-toaster-info: var(--info-foreground);
     --text-toaster-warning: var(--warning-foreground);
 
-    --color-default-primary: oklch(0.606 0.25 292.717);
-    --color-default-secondary:  oklch(0.967 0.001 286.375);
-    --color-default-accent:  oklch(0.967 0.001 286.375);
-    --color-default-destructive:oklch(0.577 0.245 27.325);
+    --color-default-primary:  oklch(0.141 0.005 285.823);
+    --color-default-secondary: oklch(0.274 0.006 286.033);
+    --color-default-accent: oklch(0.274 0.006 286.033);
+    --color-default-destructive: oklch(0.704 0.191 22.216);
 
 
     --color-neo-primary: oklch(0.65 0.24 26.92);

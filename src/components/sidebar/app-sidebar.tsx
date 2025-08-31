@@ -1,7 +1,6 @@
 'use client';
 import { ChevronRight } from 'lucide-react';
 import { useLocale } from 'next-intl';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo } from 'react';
 
@@ -9,7 +8,6 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail, useSidebar } from '@/components/ui/sidebar';
-import logger from '@/lib/logger';
 import { EachElement } from '@/lib/utils';
 import ThemeColor from '../theme-color';
 import ThemeMode from '../theme-mode/theme-mode';
@@ -18,11 +16,15 @@ import { Skeleton } from '../ui/skeleton';
 import { NavUser } from './nav-user';
 
 // Assuming these are your store/hook imports
+import { Link } from '@/i18n/navigation';
 import { EnabledLocale } from '@/i18n/routing';
+import logger from '@/lib/logger';
 import { MapLocalMenu, MenuLabelKey } from '@/lib/menu-utils';
+import report from '@/lib/report';
 import { MenuPermissionNode } from '@/model'; // Make sure this model is correctly defined
 import { useStoreMenu } from '@/stores/store-menu';
 import { useStoreUser } from '@/stores/store-user';
+import NavigateLinkEvent from '../navigate-link-event';
 
 
 
@@ -56,14 +58,16 @@ const buildMenu = (menus: MenuPermissionNode[], pathname: string, locale: string
                 <SidebarMenu key={menu[field]}>
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild isActive={pathname.startsWith(`/${locale}${menu.url}`)}>
-                            <Link
-                                href={`/${locale}${menu.url ?? ""}`}
+                            <NavigateLinkEvent
+                                href={`/${menu.url ?? ""}`}
                                 className='w-full justify-start px-2'
-                                onClick={closeSideBar}
+                                onClick={() => {
+                                    closeSideBar();
+                                }}
                             >
                                 {menu.icon && <RenderIcon name={menu.icon as IconName} />}
                                 {menu[field]}
-                            </Link>
+                            </NavigateLinkEvent>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
@@ -78,20 +82,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const pathname = usePathname();
     const locale = useLocale();
     const { isMobile, setOpenMobile } = useSidebar();
-
+    logger.debug("callAsia", { menus, session });
     // Effect to fetch menus when the session is available
     useEffect(() => {
-        if (session && !menus) {
+        if (session?.user && !menus) {
             (async () => {
-                logger.debug("FETCHING MENU");
                 try {
-                    const r = await fetch("/api/menu/me");
+                    const r = await fetch("/api/v1/menu/me");
                     if (!r.ok) throw new Error("Failed to load menu: " + await r.text());
                     const json = await r.json();
-                    logger.debug(json);
+                    // logger.debug(json);
                     setMenus(json); // Store the fetched menus
                 } catch (e) {
-                    logger.error(e);
+                    report(e);
                 }
             })();
         }
@@ -103,6 +106,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             setOpenMobile(false);
         }
     }, [isMobile, setOpenMobile]);
+
+    // const handleChangeRoute = (route: string) => {
+    //     startGlobalTransition(() => {
+    //         router.push(route);
+    //     });
+    // };
 
     // Memoize the entire rendered menu tree.
     // It will only be recalculated if menus, pathname, locale, or the close function changes.

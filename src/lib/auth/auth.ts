@@ -8,14 +8,14 @@ import logger from "../logger";
 import report from "../report";
 
 export async function refreshAccessToken(token: JWT) {
-  logger.debug("Refreshing access token", { token });
+  logger.info("Refreshing access token", { token });
   try {
     const res = await fetch(process.env.API_SERVICE + "/api/v1/auth/refresh-token", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refreshToken: token.refreshToken }),
     });
-    logger.debug("RESPONSE OKK ", res.ok);
+    logger.info("RESPONSE ", res.ok);
     if (!res.ok) {
       logger.error("RESPONSE ERROR ", await res.text());
       return { ...token, error: "RefreshAccessTokenError" };
@@ -45,7 +45,7 @@ export const authOptions: NextAuthOptions = {
         password: {}
       },
       async authorize(credentials) {
-        logger.debug({ credentials });
+        // logger.debug({ credentials });
         try {
           const res = await apiRequest({
             url: "/api/v1/auth/login",
@@ -97,7 +97,6 @@ export const authOptions: NextAuthOptions = {
       },
     },
   },
-
   callbacks: {
     async jwt({ token, trigger, user, session }) {
       // กรณีมี user ใหม่ (ตอน login หรือ session ใหม่)
@@ -171,5 +170,5 @@ export const authOptions: NextAuthOptions = {
 };
 
 export const handleClearSession = async () => {
-  await axios.post("/api/signout");
+  await axios.post("/api/v1/auth/signout");
 };

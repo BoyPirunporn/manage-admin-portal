@@ -1,9 +1,12 @@
-import Backdrop from '@/components/backdrop';
 
 const loading = () => {
   return (
-   <Backdrop/>
-  )
-}
+    <div className=' h-screen w-full pointer-events-auto  bg-accent/50 top-0 z-10 absolute'>
+      <div className="h-full w-full flex justify-center items-center flex-col ">
+        <div className='loader ' />
+      </div>
+    </div>
+  );
+};
 
-export default loading
+export default loading;

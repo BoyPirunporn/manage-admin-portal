@@ -9,70 +9,36 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { FormInputField } from '@/components/ui/form-input';
-import logger from '@/lib/logger';
-import { MenuModelWithRoleMenuPermission, PermissionModel, RoleModel } from '@/model';
+import { RoleModel } from '@/model';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
+import { useCustomRouter as useRouter } from '@/components/custom-router';
 import Heading from '@/components/heading';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useActivityLog } from '@/hooks/use-activity-log';
 import report from '@/lib/report';
+import { cn } from '@/lib/utils';
+import { getMemberSchema, MemberSchema } from '@/schema/member.schema';
 import axios from 'axios';
 import { useTranslations } from 'next-intl';
-import { useRouter } from '@/i18n/navigation';
 
 
-const roleSchema: z.ZodType<Omit<RoleModel, "description">> = z.object({
-  id: z.string().nullable(),
-  name: z.string(),
-});
-
-const menuItemSchema = z.object({
-  id: z.number(),
-  title: z.string(),
-  referenceId: z.string().nullable(),
-  parent: z.object({
-    id: z.number()
-  }).nullable(),
-  permissions: z.array(z.object({
-    id: z.number(),
-    name: z.string(),
-  }))
-
-});
-const memberSchema = z.object({
-  id: z.string().nullable(),
-  email: z.string().min(1),
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
-  password: z.string().min(1),
-  roleId: z.string(),
-});
-
-
-export type MemberSchema = z.infer<typeof memberSchema>;
-type RoleSchema = z.infer<typeof roleSchema>;
-type MenuItemSchema = z.infer<typeof menuItemSchema>;
 
 const FormMemberInput = ({
   data,
   roles,
-  menuItems,
-  permissions,
   action
 }: {
   data: MemberSchema | null;
   roles: RoleModel[];
-  menuItems: MenuModelWithRoleMenuPermission[];
-  permissions: PermissionModel[];
   action: string;
 }) => {
   const t = useTranslations();
   const router = useRouter();
+  const memberSchema = useMemo(() => getMemberSchema(t), [t]);
   const form = useForm<MemberSchema>({
     resolver: zodResolver(memberSchema as any),
     defaultValues: {
@@ -80,7 +46,6 @@ const FormMemberInput = ({
       email: "",
       firstName: "",
       lastName: "",
-      password: "",
       roleId: "",
     },
     disabled: action === "view"
@@ -91,7 +56,7 @@ const FormMemberInput = ({
   const handleSubmit = async (values: MemberSchema) => {
     try {
       await axios({
-        url: process.env.NEXT_PUBLIC_APP_URL + "/api/user-management",
+        url: process.env.NEXT_PUBLIC_APP_URL + "/api/v1/user-management",
         method: data ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
@@ -99,9 +64,9 @@ const FormMemberInput = ({
         data: JSON.stringify(values)
       });
       if (data) {
-        useActivityLog().log("EDIT", "EDIT:"+data.id!, { from: "ACTION IN FORM", data: values });
+        useActivityLog().log("EDIT", "EDIT:" + data.id!, { from: "ACTION IN FORM", data: values });
       } else {
-        useActivityLog().log("CREATE", "CREATE:"+values.email, { from: "ACTION IN FORM", data: values });
+        useActivityLog().log("CREATE", "CREATE:" + values.email, { from: "ACTION IN FORM", data: values });
       }
       toast.success(`Member ${data ? "updated" : "created"} successfully!`, {
         duration: 2 * 1000,
@@ -113,7 +78,6 @@ const FormMemberInput = ({
         router.back();
       }, 2 * 1000);
     } catch (error) {
-      logger.info({ error });
       toast.error(report(error), {
         duration: 3 * 1000,
       });
@@ -128,7 +92,6 @@ const FormMemberInput = ({
         email: data?.email ?? "",
         firstName: data?.firstName ?? "",
         lastName: data?.lastName ?? "",
-        password: data?.password ?? "",
         roleId: data?.roleId ?? null,
       });
 
@@ -145,20 +108,21 @@ const FormMemberInput = ({
         </div>
         <form onSubmit={form.handleSubmit(handleSubmit)} className='grid grid-cols-1 md:grid-cols-2 gap-5'>
           <FormInputField control={form.control} name='email' label={t("member.email")} />
-          <FormInputField control={form.control} name='password' readonly={!!data} label={t("member.password")} type='password' />
           <FormInputField control={form.control} name='firstName' label={t("member.firstName")} />
           <FormInputField control={form.control} name='lastName' label={t("member.lastName")} />
 
           {/* Roles */}
           <div className='mb-5 flex flex-col gap-5 md:col-span-2'>
-            <h1 className='text-xl font-bold'>{t("role.heading")}</h1>
+            <h1 className={cn("text-xl font-bold")}>{t("role.heading")}</h1>
             <FormField
               control={form.control}
               name="roleId"
               render={({ field }) => (
                 <FormItem>
+                  <FormMessage />
                   <FormControl>
                     <RadioGroup
+                    disabled={field.disabled}
                       onValueChange={field.onChange}
                       value={field.value}
                       className="flex flex-col space-y-1"
@@ -168,75 +132,15 @@ const FormMemberInput = ({
                           <FormControl>
                             <RadioGroupItem className='w-6 h-6 cursor-pointer' value={role.id!} />
                           </FormControl>
-                          <FormLabel className="font-normal text-base cursor-pointer">{role.name}</FormLabel>
+                          <FormLabel aria-disabled={field.disabled} className="aria-[disabled=true]:cursor-not-allowed font-normal text-base cursor-pointer">{role.name}</FormLabel>
                         </FormItem>
                       ))}
                     </RadioGroup>
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
-            {/* <FormField
-              control={form.control}
-              name="roles"
-              render={() => (
-                <FormItem>
-                  {roles.map((item) => (
-                    // <FormField
-                    //   key={item.id}
-                    //   control={form.control}
-                    //   name="roles"
-                    //   render={({ field }) => {
-                    //     return (
-                    //       <FormItem
-                    //         key={item.id}
-                    //         className="flex flex-row items-center gap-2"
-                    //       >
-                    //         <FormControl>
-                    //           <Checkbox
-                    //             disabled={field.disabled}
-                    //             className='w-5 h-5'
-                    //             checked={field.value?.map(e => e.id).includes(item.id)}
-                    //             onCheckedChange={(checked) => {
-
-                    //               return checked
-                    //                 ? field.onChange([...field.value, item])
-                    //                 : field.onChange(
-                    //                   field.value?.filter(
-                    //                     (value) => value.id !== item.id
-                    //                   )
-                    //                 );
-                    //             }}
-                    //           />
-                    //         </FormControl>
-                    //         <FormLabel className="text-md font-normal cursor-pointer">
-                    //           {item.name}
-                    //         </FormLabel>
-                    //       </FormItem>
-                    //     );
-                    //   }}
-                    // />
-                  ))}
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
           </div>
-          {/*End Roles */}
-
-          {/* Menus */}
-          {/* <div className='mb-5 flex flex-col gap-5 md:col-span-2'>
-            <h1 className='text-xl font-bold'>Menus</h1>
-            <AccordionLevel
-              disabled={action === "view"}
-              items={menuItems}
-              permissions={sortedPermissions}
-              checkedPermissions={checkedPermissions}
-              handleCheck={handleCheck}
-            />
-          </div> */}
-          {/* End Menus */}
           <Button disabled={form.formState.disabled || form.formState.isSubmitting} className='m-auto md:col-span-2 min-w-sm '>{t("common.btnSubmit")}</Button>
         </form>
       </div>

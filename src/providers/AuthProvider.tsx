@@ -12,12 +12,14 @@ const AuthProvider = ({
     session: Session | null;
     children: React.ReactNode;
 }>) => {
-    const { setUser, user } = useStoreUser();
+    const { user, setUser } = useStoreUser();
+
+    // // การทำแบบนี้ยังคงมีประโยชน์เพื่อให้เข้าถึง session จากที่อื่นที่ไม่ใช่ component ได้
     useEffect(() => {
         if (session && !user) {
             setUser(session);
         }
-    }, [session, setUser]);
+    }, []);
     return (
         <SessionProvider session={session}>
             {children}

@@ -32,16 +32,13 @@ import { handleClearSession } from "@/lib/auth/auth";
 import { useStoreMenu } from "@/stores/store-menu";
 import { useStoreUser } from "@/stores/store-user";
 import { signOut } from "next-auth/react";
-import { useLocale } from "next-intl";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useCustomRouter } from "../custom-router";
+import NavigateLinkEvent from "../navigate-link-event";
 
 export function NavUser() {
     const { isMobile } = useSidebar();
-    const { user: session } = useStoreUser();
-    const router = useRouter();
-    const locale = useLocale();
-
+    const { user: session, clearUser } = useStoreUser();
+    const router = useCustomRouter();
     return (
         <SidebarMenu>
             <SidebarMenuItem>
@@ -82,26 +79,31 @@ export function NavUser() {
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                             <DropdownMenuItem asChild>
-                                <Link href={"/settings/profile"} onClick={() => useActivityLog().log("CLICK_MENU", "USER:PROFILE", { form: "menu-user" })}>
+                                <NavigateLinkEvent href={"/settings/profile"} onClick={() => useActivityLog().log("CLICK_MENU", "USER:PROFILE", { form: "menu-user" })}>
                                     <User2 />
                                     Profile
-                                </Link>
+                                </NavigateLinkEvent>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
-                                <Link href={"/settings/change-password"} onClick={() => useActivityLog().log("CLICK_MENU", "USER:CHANGE_PASSWORD", { form: "menu-user" })}>
+                                <NavigateLinkEvent href={"/settings/change-password"} onClick={() => useActivityLog().log("CLICK_MENU", "USER:CHANGE_PASSWORD", { form: "menu-user" })}>
                                     <KeyRound />
                                     Change password
-                                </Link>
+                                </NavigateLinkEvent>
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={async () => {
+                            // 1. เคลียร์ State ฝั่ง Client ให้หมดก่อน
+                            clearUser();
+                            useStoreMenu.getState().clear();
+
+                            // 2. สั่งงานฝั่ง Server และรอให้เสร็จ
                             await useActivityLog().log("SIGNOUT", "USER:SIGNOUT", { form: "menu-user" });
                             await handleClearSession();
                             await signOut({ redirect: false });
-                            useStoreMenu.getState().clear();
-                            useStoreUser.getState().clearUser();
-                            router.replace(`/${locale}/auth`);
+
+                            // 3. เมื่อทุกอย่างเสร็จสิ้น ค่อย Redirect
+                            router.replace(`/auth`);
                         }}>
                             <LogOut />
                             Log out

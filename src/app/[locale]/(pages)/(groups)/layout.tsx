@@ -6,7 +6,9 @@ const layout = ({
     children: React.ReactNode;
 }) => {
     return (
-        <section className='py-10 px-5 md:px-10'>{children}</section>
+        <section className='py-10 px-5 md:px-10'>
+            {children}
+        </section>
     );
 };
 

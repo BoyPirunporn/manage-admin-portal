@@ -1,12 +1,8 @@
 'use client';
-import GlobalDataTable from '@/components/datatable/global-datatable';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import useStoreModal from '@/stores/store-model';
 import { useState } from 'react';
-import { menuItemColumn } from './column-def';
 // import MenuInputForm from './menu-input-form';
-import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import Heading from '@/components/heading';
 
 
@@ -32,7 +28,7 @@ const MenuPage = () => {
      
       {/* <GlobalDataTable
         columns={menuItemColumn}
-        apiUrl={'/api/menu'}
+        apiUrl={'/api/v1/menu'}
         // initialPageSize={2}
         searchCriteria={[
           {

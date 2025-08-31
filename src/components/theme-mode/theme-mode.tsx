@@ -6,7 +6,8 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
 const ThemeMode = () => {
-    const { theme, setTheme } = useTheme();
+    const { theme: currentTheme, setTheme, systemTheme } = useTheme();
+    const theme = currentTheme === "system" ? systemTheme : currentTheme;
     const [x, setX] = useState(theme === "dark" ? 32 : 3);
     const [icon, setIcon] = useState(theme as string);
     const [pendingTheme, setPendingTheme] = useState<string | null>(null);

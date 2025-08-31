@@ -1,20 +1,12 @@
-import { KEY_MAP } from '@/components/accordion-level';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
 import { FormInputField } from '@/components/ui/form-input';
-import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { EnabledLocale } from '@/i18n/routing';
-import { MapLocalMenu, MenuLabelKey } from '@/lib/menu-utils';
 import { EachElement } from '@/lib/utils';
-import { MenuPermissionNode } from '@/model';
 import { useStoreMenu } from '@/stores/store-menu';
 import { useStoreUser } from '@/stores/store-user';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useLocale } from 'next-intl';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -75,9 +67,9 @@ const ProfileDetail = () => {
 
                 <div className="md:col-span-2 gap-2 flex flex-col">
                   <h1 className="text-xl">Roles</h1>
-                  <AccordionComponent
+                  {/* <AccordionComponent
                     items={menus as MenuPermissionNode[]}
-                  />
+                  /> */}
                 </div>
               </>
             )}
@@ -89,62 +81,62 @@ const ProfileDetail = () => {
   );
 };
 
-const AccordionComponent = ({
-  items
-}: {
-  items: MenuPermissionNode[];
-}) => {
-  const locale = useLocale();
-  const field: MenuLabelKey = MapLocalMenu[locale as EnabledLocale];
-  const [accordionValue, setAccordionValue] = React.useState<string | undefined>(undefined);
+// const AccordionComponent = ({
+//   items
+// }: {
+//   items: MenuPermissionNode[];
+// }) => {
+//   const locale = useLocale();
+//   const field: MenuLabelKey = MapLocalMenu[locale as EnabledLocale];
+//   const [accordionValue, setAccordionValue] = React.useState<string | undefined>(undefined);
 
-  const renderPermission = (item: MenuPermissionNode) => {
-    let elements: React.ReactNode[] = [];
-    Object.entries(item).forEach(([key, value]) => {
-      if (key in KEY_MAP) {
-        const mapKey = `${item.menuId}_${KEY_MAP[key]}`;
-        elements.push(
-          <div key={mapKey} className="flex items-center gap-2">
-            <Checkbox
-              checked={value}
-              disabled
-              id={mapKey}
-            />
-            <Label className='cursor-pointer ' htmlFor={mapKey}>{KEY_MAP[key]}</Label>
-          </div>
-        );
-      }
-    });
-    return elements;
-  };
-  return (
-    <Accordion
-      type="single"
-      collapsible
-      value={accordionValue}
-      onValueChange={setAccordionValue}
-      className="flex flex-col gap-5"
-    >
-      {items && items.length && items.map((item) => (
-        <AccordionItem key={item.menuId} value={item[field]}>
-          <AccordionTrigger className="cursor-pointer border px-2">{item[field]}</AccordionTrigger>
-          <AccordionContent className="rounded-md px-3 py-2">
-            {item.children?.length ? (
-              <AccordionComponent
-                items={item.children}
-              />
-            ) : (
-              <div className="flex flex-row gap-4 flex-wrap">
-                {
-                  renderPermission(item)
-                }
-              </div>
-            )}
-          </AccordionContent>
-        </AccordionItem>
-      ))}
-    </Accordion>
-  );
-};
+//   const renderPermission = (item: MenuPermissionNode) => {
+//     let elements: React.ReactNode[] = [];
+//     Object.entries(item).forEach(([key, value]) => {
+//       if (key in KEY_MAP) {
+//         const mapKey = `${item.menuId}_${KEY_MAP[key]}`;
+//         elements.push(
+//           <div key={mapKey} className="flex items-center gap-2">
+//             <Checkbox
+//               checked={value}
+//               disabled
+//               id={mapKey}
+//             />
+//             <Label className='cursor-pointer ' htmlFor={mapKey}>{KEY_MAP[key]}</Label>
+//           </div>
+//         );
+//       }
+//     });
+//     return elements;
+//   };
+//   return (
+//     <Accordion
+//       type="single"
+//       collapsible
+//       value={accordionValue}
+//       onValueChange={setAccordionValue}
+//       className="flex flex-col gap-5"
+//     >
+//       {items && items.length && items.map((item) => (
+//         <AccordionItem key={item.menuId} value={item[field]}>
+//           <AccordionTrigger className="cursor-pointer border px-2">{item[field]}</AccordionTrigger>
+//           <AccordionContent className="rounded-md px-3 py-2">
+//             {item.children?.length ? (
+//               <AccordionComponent
+//                 items={item.children}
+//               />
+//             ) : (
+//               <div className="flex flex-row gap-4 flex-wrap">
+//                 {
+//                   renderPermission(item)
+//                 }
+//               </div>
+//             )}
+//           </AccordionContent>
+//         </AccordionItem>
+//       ))}
+//     </Accordion>
+//   );
+// };
 
 export default ProfileDetail;

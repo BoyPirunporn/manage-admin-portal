@@ -2,13 +2,12 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { FormInputField } from '@/components/ui/form-input';
 import { useActivityLog } from '@/hooks/use-activity-log';
-import logger from '@/lib/logger';
+import { useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import useStoreModal from '@/stores/store-model';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
 import { useLocale, useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 const signInSchema = z.object({
@@ -17,7 +16,6 @@ const signInSchema = z.object({
 });
 
 type SignIn = z.infer<typeof signInSchema>;
-const delay = async (duration: number) => await new Promise(resolve => setTimeout(resolve, duration));
 const SignInComponent = ({
     active,
     handleToggle
@@ -25,10 +23,10 @@ const SignInComponent = ({
     active: boolean;
     handleToggle: () => void;
 }>) => {
-    const t = useTranslations()
+    const t = useTranslations();
     const locale = useLocale();
     const route = useRouter();
-   
+
 
     const modal = useStoreModal();
     const form = useForm<SignIn>({
@@ -53,7 +51,7 @@ const SignInComponent = ({
             }
             if (response?.ok) {
                 useActivityLog().log("SIGNIN", "CREDENTIAL", { from: "next-auth-provider" });
-               window.location.href = `/${locale}/`
+                window.location.replace("/"+locale)
             }
         } catch (error) {
             modal.openModal({
@@ -61,7 +59,7 @@ const SignInComponent = ({
                 content: (error as Error).message
             });
         } finally {
-            logger.debug("SUBMIT END -> " + form.formState.isSubmitting);
+            // logger.debug("SUBMIT END -> " + form.formState.isSubmitting);
 
         }
     };

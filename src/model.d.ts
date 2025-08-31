@@ -24,15 +24,25 @@ interface PagedResponse<T> {
     pageSize: number;
     isLast: boolean;
 }
-interface TableState {
-    // pageIndex: number;      // หน้าปัจจุบัน (เริ่มจาก 0)
+
+type StateWithoutFilterBy = {
+    filter?: string;
+    filterBy?: never; // 💡 ใช้ never เพื่อบอกว่าห้ามมี property นี้
+};
+
+// สภาวะที่ 2: มี filterBy (ดังนั้น globalFilter ต้องมีเสมอ)
+type StateWithFilterBy<T> = {
+    filter: string; // 👈 Required
+    filterBy: keyof T;    // 👈 Required
+};
+interface BaseTableState {
     pageSize?: PageSize;       // จำนวนข้อมูลต่อหน้า
     sorting?: {              // การเรียงข้อมูล
         id: string;
         desc: boolean;
     }[];
-    globalFilter?: string;   // คำค้นหา
 }
+type TableState<T> = BaseTableState & (StateWithoutFilterBy | StateWithFilterBy<T>);
 export interface MenuModel {
     id?: string | null;
     nameEN: string;
@@ -92,6 +102,9 @@ interface BaseResponse {
 }
 interface ResponseApi extends BaseResponse {
     message: string;
+}
+interface ResponseWithError extends BaseResponse {
+    errors: Record<string, string[]>;
 }
 interface ResponseApiWithPayload<T> extends BaseResponse {
     payload: T;

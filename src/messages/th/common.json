@@ -1,6 +1,7 @@
 {
     "btnSubmit": "บันทึก",
     "btnAdd": "เพิ่ม",
+    "btnOk": "ตกลง",
     "btnCancel": "ยกเลิก",
     "email": "อีเมล",
     "password": "รหัสผ่าน",
@@ -8,6 +9,14 @@
     "createdAt": "วันที่สร้าง",
     "updatedAt": "วันที่แก้ไข",
     "action": "การจัดการ",
-    "verifyEmailHeading": "ยืนยันตัวตน"
+    "verifyEmailHeading": "ยืนยันตัวตน",
+     "permission": {
+        "VIEW": "สามารถดูได้",
+        "CREATE": "สามารถสร้างได้",
+        "UPDATE": "สามารถแก้ไขได้",
+        "DELETE": "สามารถลบได้"
+    },
+    "listMenus":"รายการเมนู"
+    
 
 }

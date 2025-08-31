@@ -1,6 +1,7 @@
 {
     "btnSubmit": "Submit",
     "btnAdd": "Add",
+    "btnOk":"Ok",
     "btnCancel": "Cancel",
     "email": "Email",
     "password": "Password",
@@ -8,6 +9,13 @@
     "createdAt": "Created At",
     "updatedAt": "Updated At",
     "action": "Action",
-    "verifyEmailHeading": "Verify Email"
-    
+    "verifyEmailHeading": "Verify Email",
+    "permission": {
+        "VIEW": "View",
+        "CREATE": "Create",
+        "UPDATE": "Update",
+        "DELETE": "Delete"
+    },
+    "listMenus": "List Menus"
+   
 }

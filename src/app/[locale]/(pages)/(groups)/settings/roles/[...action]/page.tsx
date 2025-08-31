@@ -2,10 +2,11 @@ import PermissionGuard, { PermissionAction } from '@/components/guard/Permission
 import Heading from '@/components/heading';
 import { RouteBuilder } from '@/lib/path';
 import { GlobalPropsWithParams, MenuModel, RoleModelWithPermission } from '@/model';
+import { getMenus, getRoleById } from '@/services/role.service';
+import { getTranslations } from 'next-intl/server';
 import dynamic from 'next/dynamic';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
-import { getMenus, getRoleById } from '../action';
 
 const RoleAndPermissionForm = dynamic(() => import("../form/role-and-permission-form"), {
     ssr: true,
@@ -21,7 +22,7 @@ const RoleAndPermissionForm = dynamic(() => import("../form/role-and-permission-
 });
 
 const RolePage = async ({ params }: { params: GlobalPropsWithParams['params'] & Promise<{ action: string[]; }>; }) => {
-    const locale = (await params).locale;
+    const t = await getTranslations();
     const actionParams = (await params).action || []; // If no params, it's the list view
     let path = null;
     let action: PermissionAction;
@@ -54,15 +55,24 @@ const RolePage = async ({ params }: { params: GlobalPropsWithParams['params'] & 
         ]);
     }
 
-    console.log({menus})
+    const title = () => {
+        switch (action) {
+            case 'view':
+                return t("role.form.heading.View");
+            case 'create':
+                return t("role.form.heading.Create");
+            case 'update':
+                return t("role.form.heading.Update");
+        }
+    };
     return (
         <PermissionGuard action={action} path={path}>
             <Heading
-                title={action.substring(0, 1).toUpperCase() + action.substring(1) + " Role"}
-                description='Manage role'
+                title={title()}
+                description={t("role.description")}
             />
             <Suspense fallback={"loading"}>
-                <RoleAndPermissionForm data={roleData} menus={menus} />
+                <RoleAndPermissionForm data={roleData} menus={menus} disabled={roleData! && action === 'view'} />
             </Suspense>
         </PermissionGuard>
     );

@@ -1,4 +1,3 @@
-import logger from "@/lib/logger";
 import { PagedResponse } from "@/model";
 import { NextRequest, NextResponse } from "next/server";
 import { apiRequest, responseError } from "./api-request";
@@ -9,7 +8,7 @@ export async function handleDataTableRequest<T>(req: NextRequest, apiUrl: string
         params[key] = value;
     }
 
-    logger.info({params})
+    // logger.debug({params})
     try {
         const response = await apiRequest<PagedResponse<T>>({
             url: apiUrl,

@@ -1,5 +1,5 @@
+import { verifyToken } from "@/services/verify-token.service";
 import { redirect } from "next/navigation";
-import { verifyToken } from "./action";
 import VerifyEmailClient from "./client/VerifyEmailClient";
 
 interface VerifyEmailPageProps {

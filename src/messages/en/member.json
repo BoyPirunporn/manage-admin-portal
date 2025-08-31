@@ -6,11 +6,12 @@
     "firstName": "First Name",
     "lastName": "Last Name",
     "password": "รหัสผ่าน",
+    "role": "บทบาท",
     "table": {
-        "image": "Image"
+        "image": "Image",
+        "searchPlaceHolder":"Search with {field}"
     },
     "form": {
-        "input": {
-        }
+        "input": {}
     }
 }

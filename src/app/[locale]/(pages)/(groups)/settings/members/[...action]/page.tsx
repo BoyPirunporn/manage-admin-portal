@@ -1,8 +1,8 @@
 import PermissionGuard, { PermissionAction } from '@/components/guard/PermissionGuard';
 import { RouteBuilder } from '@/lib/path';
 import { GlobalPropsWithParams } from '@/model';
+import { getRoles, getUser } from '@/services/user.service';
 import { notFound } from 'next/navigation';
-import { getRoles, getUser } from './action';
 import FormMemberInput from './components/form-member-input';
 
 type Action = 'view' | 'create' | 'update';
@@ -10,7 +10,6 @@ type Action = 'view' | 'create' | 'update';
 const CreateOrUpdateMemberPage = async (
     { params }: { params: GlobalPropsWithParams['params'] & Promise<{ action: string[]; }>; }
 ) => {
-    const locale = (await params).locale;
     const actionParams = (await params).action || []; // If no params, it's the list view
     let path = null;
     let action: PermissionAction;
@@ -44,7 +43,7 @@ const CreateOrUpdateMemberPage = async (
     }
     return (
         <PermissionGuard path={path ?? ""} action={action}>
-            <FormMemberInput action={action} data={userData} roles={rolesData!} menuItems={[]} permissions={[]} />
+            <FormMemberInput action={action} data={userData} roles={rolesData!} />
         </PermissionGuard>
     );
 };

@@ -7,7 +7,7 @@
     }
 
     .toggle-bg {
-      @apply bg-gradient-to-r from-primary/20  to-emerald-600 text-white relative -left-full w-[200%] h-full flex transition-all duration-500 ease-in-out
+      @apply bg-gradient-to-r from-primary/20  to-accent text-white relative -left-full w-[200%] h-full flex transition-all duration-500 ease-in-out
     }
 
     .toggle-content {

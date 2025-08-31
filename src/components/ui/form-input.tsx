@@ -12,7 +12,6 @@ import { Checkbox } from './checkbox';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from './command';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
-import logger from '@/lib/logger';
 
 interface Option {
   label: string;
@@ -207,7 +206,7 @@ export function FormAutocomplete<T>({
 
         return res.json() as Promise<ResponseApiWithPayload<T[]>>;
       } catch (error) {
-        logger.debug(error);
+        // logger.debug(error);
         return null as unknown as ResponseApiWithPayload<T[]>;
       }
     },

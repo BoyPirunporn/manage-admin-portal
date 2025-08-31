@@ -2,7 +2,7 @@
 import { authOptions } from "@/lib/auth/auth";
 import logger from "@/lib/logger";
 import report from "@/lib/report";
-import { ResponseApi } from "@/model";
+import { ResponseApi, ResponseWithError } from "@/model";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
@@ -16,7 +16,7 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    console.error("API Error:", error.response?.data || error.message);
+    logger.error("API Error: ", error.response?.data || error.message, this);
     return Promise.reject(error);
   }
 );
@@ -52,12 +52,12 @@ export async function apiRequest<T = unknown>(
 
 
 
-
 export const responseError = (error: unknown) => {
   if (axios.isAxiosError(error)) {
-    return NextResponse.json<ResponseApi>({
+    return NextResponse.json<ResponseApi | ResponseWithError>({
       message: (error.response?.data.message ?? error.message),
       status: error.response?.status! ?? error.status,
+      errors: error.response?.data?.errors ?? {},
       timestamp: error.response?.data.timestamp
     }, {
       status: error.response?.status ?? error.status

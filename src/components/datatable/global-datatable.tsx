@@ -1,18 +1,9 @@
 'use client';
-import { handleClearSession } from '@/lib/auth/auth';
-import logger from '@/lib/logger';
-import report from '@/lib/report';
 import { CustomColumnDef, PagedResponse, TableState } from '@/model';
-import { useStoreMenu } from '@/stores/store-menu';
-import useStoreModal from '@/stores/store-model';
-import { useStoreUser } from '@/stores/store-user';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { getCoreRowModel, RowData, useReactTable } from '@tanstack/react-table';
-import axios, { isAxiosError } from 'axios';
-import { signOut } from 'next-auth/react';
-import { useLocale } from 'next-intl';
+import axios from 'axios';
 import { useState } from 'react';
-import { Button } from '../ui/button';
 import DataTable, { PageSize } from './data-table';
 
 export interface SearchCriteria {
@@ -26,7 +17,7 @@ export interface GlobalDataTableProps<T extends RowData> {
     columns: CustomColumnDef<T>[];
     apiUrl: string;
     queryKey?: string;
-    tableState?: TableState;
+    tableState?: TableState<T>;
 }
 
 
@@ -36,63 +27,38 @@ function GlobalDataTable<T extends RowData>({
     queryKey = 'datatable',
     tableState
 }: GlobalDataTableProps<T>) {
-    const storeModal = useStoreModal();
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize, setPageSize] = useState<PageSize>(() => tableState?.pageSize ?? 10);
 
-    const { data, isLoading } = useQuery<PagedResponse<T>, Error>({
-        queryKey: [queryKey, pageIndex, pageSize, tableState?.globalFilter],
-        queryFn: async () => {
-            const sortParams = tableState?.sorting?.map(sort =>
-                `${sort.id},${sort.desc ? 'desc' : 'asc'}`
+    const { data, isLoading } = useQuery<PagedResponse<T>, Error>({...{},
+        queryKey: [queryKey, pageIndex, pageSize, queryKey+tableState?.filter],
+        queryFn: async ({signal}) => {
+            const sortParams = tableState?.sorting?.map(sort => `${sort.id},${sort.desc ? 'desc' : 'asc'}`
             ).join('');
             const params = {
                 page: pageIndex,
                 size: pageSize,
                 sort: sortParams || 'asc', // ตั้งค่า default ถ้าไม่มีการเรียง
-                search: tableState?.globalFilter || '',
+                search: tableState?.filter || '',
+                searchBy: tableState?.filterBy || null
             };
             try {
                 const { data } = await axios<PagedResponse<T>>(process.env.NEXT_PUBLIC_APP_URL + `/${apiUrl}`, {
                     method: "GET",
                     headers: { "Content-Type": "application/json" },
                     params,
+                    signal
                 });
                 return data as PagedResponse<T>;
-            } catch (error: any) {
-                logger.debug({ error });
-                if (isAxiosError(error)) {
-                    if (error.status === 401) {
-                        await handleClearSession();
-                        await signOut({ redirect: false });
-                        useStoreMenu.getState().clear();
-                        useStoreUser.getState().clearUser();
-                        storeModal.openModal({
-                            title: error?.name,
-                            content: (
-                                <div className="flex flex-col gap-3">
-                                    <p>Session Timeout</p>
-                                    <Button className="ml-auto" onClick={() => (window.location.href = `/${useLocale()}/auth`)}>
-                                        OK
-                                    </Button>
-                                </div>
-                            ),
-                            showCloseButton: false,
-                            onInteractOutside: false,
-                        });
-                    }
-                } else {
-                    storeModal.openModal({
-                        title: error?.name,
-                        content: report(error)
-                    });
-                }
-
-                return null as unknown as PagedResponse<T>;
+            } catch (error) {
+                throw error
             }
         },
+
         placeholderData: keepPreviousData,
-        retry: false
+        retry: false,
+        enabled: tableState?.filter ? tableState.filter.length > 3 : true
+        
     });
 
     const table = useReactTable({

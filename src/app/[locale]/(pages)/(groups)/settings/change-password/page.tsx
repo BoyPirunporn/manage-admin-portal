@@ -56,7 +56,7 @@ const ChangePasswordPage = () => {
       const response = await changePasswordAction(data);
 
       if (response.status) {
-        useActivityLog().log("CHANGE_PASSWORD", "/api/user-management/change-password");
+        useActivityLog().log("CHANGE_PASSWORD", "/api/v1/user-management/change-password");
         toast.success(response.message, { duration: 3000 });
         setTimeout(() => {
           (async () => {

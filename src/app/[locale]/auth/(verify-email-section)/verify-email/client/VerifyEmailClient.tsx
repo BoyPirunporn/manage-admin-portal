@@ -1,12 +1,11 @@
 'use client';
+import { useCustomRouter as useRouter } from '@/components/custom-router';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { FormInputField } from '@/components/ui/form-input';
-import { useRouter } from '@/i18n/navigation';
-import logger from '@/lib/logger';
 import report from '@/lib/report';
-import { ResponseApi } from '@/model';
+import { ResponseApi, ResponseWithError } from '@/model';
 import useStoreModal from '@/stores/store-model';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios, { isAxiosError } from 'axios';
@@ -71,37 +70,35 @@ const VerifyEmailClient = ({
             router.replace("/auth/email-not-verified?message=Invalid Token Or Expired Token");
             return;
         }
-
         try {
             // 🔹 เรียก API verify token
-            const { data:response } = await axios.post<ResponseApi>("/api/verify-email", data);
+            await axios.post<ResponseApi | ResponseWithError>("/api/v1/auth/verify-email", { ...data, token });
 
-            logger.debug({ response });
+            // logger.debug({ response });
             // 🔹 สำเร็จ -> redirect ไปหน้า success
             modal.openModal({
-                title: "Verify Email",
-                content: `${response.message}, Please waiting we taking you to the login page`,
+                title: t("verify-email.titleModal"),
+                content: t("verify-email.success"),
                 showCloseButton: false,
             });
-
+            setTimeout(() => {
+                modal.closeAllModals()
+                router.replace("/auth",{})
+            }, 5*1000);
         } catch (error) {
+            report(error);
             if (isAxiosError<ResponseApi>(error)) {
-                logger.debug(error.response?.data.message);
+               console.log(error.status)
                 modal.openModal({
-                    title: "Error",
-                    content: `${report(error)}`,
+                    title: t("error.error"),
+                    content: t("error.errorMessage"),
                     showCloseButton: false,
                 });
                 return;
             }
-            router.replace(`/auth/email-not-verified?message=Invalid Token Or Token Expired`);
+            // router.replace(`/auth/email-not-verified?message=Invalid Token Or Token Expired`);
             return;
-        } finally {
-            setTimeout(() => {
-                modal.closeAllModals();
-                router.replace(`/auth`);
-            }, 2000);
-        }
+        } 
     };
 
     return (

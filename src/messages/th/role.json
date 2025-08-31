@@ -1,16 +1,23 @@
 {
-    "heading": "จัดการสิทธิ์",
-    "description": "",
-    "form":{
-        "input":{
-            "roleName":"ชื่อสิทธิ์",
-            "roleDesc":"รายละเอียด"
+    "heading": "จัดการบทบาท",
+    "description": "การจัดการบทบาทองผู้ใช้ในการใช้งานระบบ",
+    "createSuccess": "บทบาท {msg} ถูก {state} เรียบร้อยแล้ว",
+    "toastDescription": "กำลังนำท่านกลับสู่หน้าจัดการบทบาท",
+    "form": {
+        "heading":{
+            "View":"ดูบทบาด",
+            "Create":"สร้างบทบาท",
+            "Update":"อัพเดทบทบาท"
+        },
+        "input": {
+            "roleName": "ชื่อบทบาท",
+            "roleDesc": "รายละเอียด"
         }
     },
-    "table":{
-        "column":{
-            "name":"ชื่อสิทธิ์",
-            "desc":"รายละเอียด"
+    "table": {
+        "column": {
+            "name": "ชื่อบทบาท",
+            "desc": "รายละเอียด"
         }
     }
 }

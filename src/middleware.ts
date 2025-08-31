@@ -6,8 +6,7 @@
 
 
 // // helper สำหรับ redirect/rewrites
-// const redirectTo = (path: string, req: NextRequest) =>
-//   NextResponse.redirect(new URL(path, req.url));
+
 
 // const PUBLIC_ROUTES = [
 //   "/auth/verify-email",
@@ -92,44 +91,57 @@
 // };
 
 
+import { getToken } from "next-auth/jwt";
 import { NextRequestWithAuth, withAuth } from "next-auth/middleware";
 import createIntlMiddleware from "next-intl/middleware";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { routing } from "./i18n/routing";
 
 const publicPages = [
   "/auth",
   "/auth/email-not-verified",
-  "/auth/verify-email"
+  "/auth/verify-email",
+  "/api/auth",
+  "/api/v1/auth/verify-email"
 ];
+
+const redirectTo = (path: string, req: NextRequest) => NextResponse.redirect(new URL(path, req.url));
 
 // 1. สร้าง intlMiddleware เพื่อจัดการเรื่องภาษาโดยเฉพาะ
 const intlMiddleware = createIntlMiddleware(routing);
 
-// 2. สร้าง authMiddleware เพื่อจัดการเรื่องสิทธิ์โดยเฉพาะ
+// 2. สร้าง authMiddleware เพื่อจัดการเรื่องบทบาทโดยเฉพาะ
 const authMiddleware = withAuth(
   // ฟังก์ชันนี้จะทำงาน "หลัง" จากที่ intlMiddleware จัดการ URL แล้ว
   function middleware(req: NextRequestWithAuth) {
     // ไม่ต้องทำอะไรเป็นพิเศษ เพราะ next-auth จะจัดการ redirect เอง
     // และ intlMiddleware ได้จัดการเรื่อง path ไปแล้ว
+    const token = req.nextauth.token;
+    const { pathname } = req.nextUrl;
+
+    const isPublic = publicPages.some((path) => pathname.startsWith(path));
+
+
+
+    const pathAuth = pathname.replace(/^\/(en|th)/, "");
+
+    if (token && pathAuth === "/auth") {
+      return NextResponse.redirect(new URL(`/${pathname.split("/").filter(Boolean).at(0)}`, req.url));
+    }
+
+    // 1. ยังไม่ login แต่เข้า public page → ผ่าน
+    if (!token && isPublic) return NextResponse.next();
+
+    if(!token && !isPublic){
+      return redirectTo(`/${pathname.split("/").filter(Boolean).at(0)}/auth`,req)
+    }
+
   },
   {
     callbacks: {
-      // Logic การตรวจสอบสิทธิ์จะอยู่ที่นี่
+      // Logic การตรวจสอบบทบาทจะอยู่ที่นี่
       authorized: ({ req, token }) => {
-        const { pathname } = req.nextUrl;
-
-        // next-intl จะลบ locale ออกจาก pathname ให้เราอัตโนมัติ
-        // ดังนั้น /th/dashboard จะกลายเป็น /dashboard
-        const isPublic = publicPages.some((path) => pathname.startsWith(path));
-
-        // ถ้าเป็นหน้า public หรือมี token (login แล้ว) ให้ผ่าน
-        if (isPublic || token) {
-          return true;
-        }
-
-        // ถ้าไม่ใช่หน้า public และยังไม่ login จะถูก redirect ไปหน้า login
-        return false;
+        return true;
       },
     },
     // ระบุหน้า login (next-auth จะเติม locale ให้เอง)
@@ -139,13 +151,22 @@ const authMiddleware = withAuth(
   }
 );
 
+const DEFAULT_LOCALE = process.env.DEFAULT_LOCALE;
 // 3. Middleware หลักที่ทำหน้าที่ "ต่อท่อ"
-export default function middleware(req: NextRequest) {
+export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  if (pathname === "/") {
+    return redirectTo(`/${DEFAULT_LOCALE}`, req);
+  }
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   // ตรวจสอบว่าเป็นหน้า public หรือไม่ (โดยไม่สน locale)
   const isPublic = publicPages.some((path) => pathname.endsWith(path));
 
+  const pathAuth = pathname.replace(/^\/(en|th)/, "");
+  if (token && pathAuth === "/auth") {
+    return (authMiddleware as any)(req);
+  }
   // ถ้าเป็นหน้า public ให้ intlMiddleware ทำงานอย่างเดียว
   if (isPublic) {
     return intlMiddleware(req);

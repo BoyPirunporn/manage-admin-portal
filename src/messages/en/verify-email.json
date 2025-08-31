@@ -1,5 +1,7 @@
 {
     "heading": "Oops! Your account is not verified.",
     "invalid": "Invalid Token",
-    "expired": "Token Expired, Please contact your administrator"
+    "expired": "Token Expired, Please contact your administrator",
+    "success": "Email has been verify, Please waiting we taking you to the login page",
+    "titleModal":"Verify Email"
 }

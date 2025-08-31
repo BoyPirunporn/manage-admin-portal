@@ -43,7 +43,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    logger.debug({ error });
+    logger.error(error);
   }, [error]);
 
   return (

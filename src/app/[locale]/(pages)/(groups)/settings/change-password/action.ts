@@ -4,7 +4,7 @@ import { ChangePasswordSchema } from "./page";
 
 export const changePasswordAction = async (data: ChangePasswordSchema): Promise<{ message: string; status: boolean; }> => {
     try {
-        const response = await fetch("/api/user-management/change-password", {
+        const response = await fetch("/api/v1/user-management/change-password", {
             method: "POST",
             body: JSON.stringify(data)
         });

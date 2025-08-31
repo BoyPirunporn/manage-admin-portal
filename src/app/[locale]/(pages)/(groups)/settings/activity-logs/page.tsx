@@ -43,7 +43,7 @@ const ActivityLogsPage = async ({params}:GlobalPropsWithParams) => {
 
             ]}
                 queryKey='activity-logs-datatable'
-                apiUrl={'/api/activity-log/datatable'}
+                apiUrl={'/api/v1/activity-log/datatable'}
             />
         </PermissionGuard>
     );

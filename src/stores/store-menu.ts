@@ -1,5 +1,5 @@
 // stores/useMenuStore.ts
-import { MenuModel, MenuModelWithRoleMenuPermission, MenuPermissionNode } from "@/model";
+import { MenuPermissionNode } from "@/model";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 

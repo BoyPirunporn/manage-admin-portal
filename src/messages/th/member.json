@@ -6,8 +6,10 @@
     "firstName": "ชื่อ",
     "lastName": "นามสกุล",
     "password": "รหัสผ่าน",
+    "role":"บทบาท",
     "table": {
-        "image": "รูปภาพ"
+        "image": "รูปภาพ",
+        "searchPlaceHolder":"ค้าหาด้วย {field}"
     },
     "form":{
         "input":{

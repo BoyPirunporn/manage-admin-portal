@@ -1,6 +1,6 @@
+import { useCustomRouter } from "@/components/custom-router";
 import ColumnAction from "@/components/datatable/column-action";
 import { useActivityLog } from "@/hooks/use-activity-log";
-import { useRouter } from "@/i18n/navigation";
 import { RouteBuilder } from "@/lib/path";
 import { CustomColumnDef, RoleModel } from "@/model";
 import { usePermissions } from "@/providers/PermissionProvider";
@@ -32,7 +32,7 @@ export const roleColumnDef = (): CustomColumnDef<RoleModel>[] => {
                 header: t("common.action"),
                 alignItem: "center",
                 cell: ({ getValue }) => {
-                    const router = useRouter();
+                    const router = useCustomRouter();
                     const { can } = usePermissions();
                     return (
                         <ColumnAction
